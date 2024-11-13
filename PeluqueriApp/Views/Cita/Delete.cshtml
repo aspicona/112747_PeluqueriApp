@@ -1,0 +1,20 @@
+﻿@model PeluqueriApp.Models.Cita
+
+<h2>Eliminar Cita</h2>
+
+<p>¿Está seguro que desea eliminar esta cita?</p>
+
+<div>
+    <strong>Cliente:</strong> @Model.Cliente.Nombre @Model.Cliente.Apellido <br />
+    <strong>Empleado:</strong> @Model.Empleado.Nombre @Model.Empleado.Apellido <br />
+    <strong>Empresa:</strong> @Model.Empresa.Nombre <br />
+    <strong>Fecha:</strong> @Model.Fecha.ToString("dd/MM/yyyy HH:mm") <br />
+    <strong>Precio Estimado:</strong> @Model.PrecioEstimado <br />
+    <strong>Precio Final:</strong> @Model.PrecioFinal <br />
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

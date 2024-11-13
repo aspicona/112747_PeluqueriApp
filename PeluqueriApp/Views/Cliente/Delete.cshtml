@@ -1,0 +1,33 @@
+﻿@model Cliente
+
+<h2>Eliminar Cliente</h2>
+
+<div>
+    <h3>¿Estás seguro que deseas eliminar este cliente?</h3>
+
+    <dl class="dl-horizontal">
+        <dt>Nombre</dt>
+        <dd>@Model.Nombre</dd>
+
+        <dt>Apellido</dt>
+        <dd>@Model.Apellido</dd>
+
+        <dt>Domicilio</dt>
+        <dd>@Model.Domicilio</dd>
+
+        <dt>Teléfono</dt>
+        <dd>@Model.Telefono</dd>
+
+        <dt>Email</dt>
+        <dd>@Model.Email</dd>
+
+        <dt>Empresa</dt>
+        <dd>@Model.Empresa.Nombre</dd>
+    </dl>
+
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

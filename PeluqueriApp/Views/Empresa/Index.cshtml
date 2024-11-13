@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Empresa>
+
+<h2>Listado de Empresas</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Logo</th>
+            <th>Color Principal</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var empresa in Model)
+        {
+            <tr>
+                <td>@empresa.Nombre</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(empresa.Logo))
+                    {
+                        <img src="@empresa.Logo" alt="Logo" width="50" height="50" />
+                    }
+                </td>
+                <td style="text-align: center;">
+                    <div style="display: inline-block;">
+                        <span style="display: inline-block; width: 20px; height: 20px; background-color: @empresa.ColorPrincipal; border: 1px solid #000;"></span>
+                    </div>
+                </td>
+                <td>@empresa.Direccion</td>
+                <td>@empresa.Telefono</td>
+                <td>@empresa.Email</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@empresa.Id" class="btn btn-primary">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@empresa.Id" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success">Nueva Empresa</a>

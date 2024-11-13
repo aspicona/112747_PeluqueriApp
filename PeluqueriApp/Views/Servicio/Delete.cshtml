@@ -1,0 +1,20 @@
+﻿@model Servicio
+
+<h2>Eliminar Servicio</h2>
+
+<h3>¿Estás seguro de que deseas eliminar este servicio?</h3>
+
+<div>
+    <h4>@Model.Nombre</h4>
+    <p>Descripción: @Model.Descripcion</p>
+    <p>Precio Base: @Model.PrecioBase</p>
+    <p>Duración Estimada: @Model.DuracionEstimada minutos</p>
+    <p>Empresa: @Model.Empresa.Nombre</p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

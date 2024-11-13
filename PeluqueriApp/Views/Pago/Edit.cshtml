@@ -1,0 +1,34 @@
+﻿@model Pago
+
+<h2>Editar Pago</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label for="IdCita">Cita</label>
+        <select asp-for="IdCita" class="form-control" asp-items="ViewBag.Citas"></select>
+        <span asp-validation-for="IdCita" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="FechaPago">Fecha de Pago</label>
+        <input asp-for="FechaPago" class="form-control" type="date" />
+        <span asp-validation-for="FechaPago" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Monto">Monto</label>
+        <input asp-for="Monto" class="form-control" type="decimal" />
+        <span asp-validation-for="Monto" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="MetodoDePagoId">Método de Pago</label>
+        <select asp-for="MetodoDePagoId" class="form-control" asp-items="ViewBag.MetodosDePago"></select>
+        <span asp-validation-for="MetodoDePagoId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</form>

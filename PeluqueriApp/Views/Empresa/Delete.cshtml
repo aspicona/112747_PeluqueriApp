@@ -1,0 +1,20 @@
+﻿@model Empresa
+
+<h2>Eliminar Empresa</h2>
+
+<h3>¿Estás seguro de que deseas eliminar esta empresa?</h3>
+
+<div>
+    <h4>@Model.Nombre</h4>
+    <p>Color Principal: @Model.ColorPrincipal</p>
+    <p>Dirección: @Model.Direccion</p>
+    <p>Teléfono: @Model.Telefono</p>
+    <p>Email: @Model.Email</p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+

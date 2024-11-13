@@ -1,0 +1,51 @@
+﻿@model IEnumerable<PeluqueriApp.Models.Cita>
+
+<h2>Historial de Citas</h2>
+
+<form method="get" asp-action="Historial">
+    <div class="form-group">
+        <label for="IdCliente">Cliente</label>
+        <select name="IdCliente" class="form-control" asp-items="ViewBag.Clientes"></select>
+    </div>
+    <div class="form-group">
+        <label for="IdEmpleado">Empleado</label>
+        <select name="IdEmpleado" class="form-control" asp-items="ViewBag.Empleados"></select>
+    </div>
+    <div class="form-group">
+        <label for="IdEmpresa">Empresa</label>
+        <select name="IdEmpresa" class="form-control" asp-items="ViewBag.Empresas"></select>
+    </div>
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Empleado</th>
+            <th>Empresa</th>
+            <th>Fecha</th>
+            <th>Precio Final</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cita in Model)
+        {
+            <tr>
+                <td>@cita.Cliente.Nombre @cita.Cliente.Apellido</td>
+                <td>@cita.Empleado.Nombre @cita.Empleado.Apellido</td>
+                <td>@cita.Empresa.Nombre</td>
+                <td>@cita.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@cita.PrecioFinal</td>
+                <td>@cita.EstadoCita.Descripcion</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@cita.Id" class="btn btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@cita.Id" class="btn btn-danger">Eliminar</a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

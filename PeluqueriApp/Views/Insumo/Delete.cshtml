@@ -1,0 +1,20 @@
+﻿@model Insumo
+
+<h2>Eliminar Insumo</h2>
+
+<h3>¿Estás seguro de que deseas eliminar este insumo?</h3>
+
+<div>
+    <h4>@Model.Nombre</h4>
+    <p>Costo Unitario: @Model.CostoUnitario</p>
+    <p>Unidad de Medida: @Model.UnidadDeMedida</p>
+    <p>Stock Disponible: @Model.StockDisponible</p>
+    <p>Empresa: @Model.Empresa.Nombre</p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+

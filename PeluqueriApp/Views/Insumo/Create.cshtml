@@ -1,0 +1,32 @@
+﻿@model Insumo
+
+<h2>Crear Insumo</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="UnidadDeMedidaId">Unidad de Medida</label>
+        <select asp-for="UnidadDeMedidaId" class="form-control" asp-items="ViewBag.UnidadesDeMedida"></select>
+        <span asp-validation-for="UnidadDeMedidaId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CostoUnitario" class="form-label"></label>
+        <input asp-for="CostoUnitario" class="form-control" />
+        <span asp-validation-for="CostoUnitario" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="StockDisponible" class="form-label"></label>
+        <input asp-for="StockDisponible" class="form-control" />
+        <span asp-validation-for="StockDisponible" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="EmpresaId" class="form-label">Empresa</label>
+        <select asp-for="EmpresaId" class="form-control" asp-items="ViewBag.Empresas"></select>
+        <span asp-validation-for="EmpresaId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</form>

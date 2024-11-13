@@ -1,0 +1,35 @@
+﻿@using System.Globalization
+@model IEnumerable<Insumo>
+
+<h2>Listado de Insumos</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Unidad de Medida</th>
+            <th>Costo Unitario</th>
+            <th>Stock Disponible</th>
+            <th>Empresa</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var insumo in Model)
+        {
+            <tr>
+                <td>@insumo.Nombre</td>
+                <td>@insumo.UnidadDeMedida.Nombre</td>
+                <td>AR$ @insumo.CostoUnitario.ToString("N2", new CultureInfo("es-AR"))</td>
+                <td>@insumo.StockDisponible</td>
+                <td>@insumo.Empresa?.Nombre</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@insumo.Id" class="btn btn-primary">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@insumo.Id" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success">Nuevo Insumo</a>

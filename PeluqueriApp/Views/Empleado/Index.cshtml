@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Empleado>
+
+<h2>Listado de Empleados</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Empresa</th>
+            <th>Especialidad</th>
+            <th>Horario Disponible</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var empleado in Model)
+        {
+            <tr>
+                <td>@empleado.Nombre</td>
+                <td>@empleado.Apellido</td>
+                <td>@empleado.Email</td>
+                <td>@empleado.Empresa.Nombre</td>
+                <td>@empleado.Especialidad.Descripcion</td>
+                <td>@empleado.HorarioDesde - @empleado.HorarioHasta</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@empleado.Id" class="btn btn-primary">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@empleado.Id" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="Create" class="btn btn-success">Nuevo Empleado</a>

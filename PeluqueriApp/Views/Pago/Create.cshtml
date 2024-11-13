@@ -1,0 +1,34 @@
+﻿@model Pago
+
+<h2>Registrar Pago</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="IdCita">Cita</label>
+        <select asp-for="IdCita" class="form-control" asp-items="ViewBag.Citas">
+            <option value="">Seleccionar Cita</option>
+        </select>
+        <span asp-validation-for="IdCita" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="FechaPago">Fecha de Pago</label>
+        <input asp-for="FechaPago" class="form-control" type="date" />
+        <span asp-validation-for="FechaPago" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Monto">Monto</label>
+        <input asp-for="Monto" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="Monto" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="MetodoDePagoId">Método de Pago</label>
+        <select asp-for="MetodoDePagoId" class="form-control" asp-items="ViewBag.MetodosDePago"></select>
+        <span asp-validation-for="MetodoDePagoId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</form>

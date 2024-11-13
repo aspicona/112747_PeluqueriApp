@@ -1,0 +1,35 @@
+﻿@using System.Globalization
+@model IEnumerable<Servicio>
+
+<h2>Listado de Servicios</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio Base</th>
+            <th>Duración Estimada</th>
+            <th>Empresa</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var servicio in Model)
+        {
+            <tr>
+                <td>@servicio.Nombre</td>
+                <td>@servicio.Descripcion</td>
+                <td>AR$ @servicio.PrecioBase.ToString("N2", new CultureInfo("es-AR"))</td>
+                <td>@servicio.DuracionEstimada minutos</td>
+                <td>@servicio.Empresa?.Nombre</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@servicio.Id" class="btn btn-primary">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@servicio.Id" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success">Nuevo Servicio</a>

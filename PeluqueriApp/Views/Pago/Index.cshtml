@@ -1,0 +1,35 @@
+﻿@using System.Globalization
+@model IEnumerable<Pago>
+
+<h2>Listado de Pagos</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Cita</th>
+            <th>Datalle Cita</th>
+            <th>Monto</th>
+            <th>Fecha de Pago</th>
+            <th>Método de Pago</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pago in Model)
+        {
+            <tr>
+                <td>@pago.Cita?.Id</td>
+                <td>@pago.Cita?.Detalle</td>
+                <td>AR$ @pago.Monto.ToString("N2", new CultureInfo("es-AR"))</td>
+                <td>@pago.FechaPago.ToString("dd/MM/yyyy")</td>
+                <td>@pago.MetodoDePago.Nombre</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@pago.Id" class="btn btn-primary">Modificar</a>
+                    <a asp-action="Delete" asp-route-id="@pago.Id" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success">Nuevo Pago</a>

@@ -1,0 +1,31 @@
+﻿@model List<UserViewModel>
+
+<h2>Gestión de Usuarios</h2>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Email</th>
+			<th>Roles</th>
+			<th>Acciones</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var user in Model)
+		{
+			<tr>
+				<td>@user.Email</td>
+				<td>
+					@foreach (var role in user.Roles)
+					{
+						<span>@role</span>
+					}
+				</td>
+				<td>
+					<a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary">Editar</a>
+					<a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar a este usuario?');">Eliminar</a>
+				</td>
+
+			</tr>
+		}
+	</tbody>
+</table>

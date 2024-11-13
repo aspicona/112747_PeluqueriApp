@@ -1,0 +1,11 @@
+﻿@model EditUserViewModel
+
+<h2>Eliminar Usuario</h2>
+<p>¿Estás seguro de que deseas eliminar a este usuario?</p>
+<p><strong>@Model.Email</strong></p>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
