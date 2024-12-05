@@ -10,7 +10,6 @@
             <th>Unidad de Medida</th>
             <th>Costo Unitario</th>
             <th>Stock Disponible</th>
-            <th>Empresa</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -22,7 +21,6 @@
                 <td>@insumo.UnidadDeMedida.Nombre</td>
                 <td>AR$ @insumo.CostoUnitario.ToString("N2", new CultureInfo("es-AR"))</td>
                 <td>@insumo.StockDisponible</td>
-                <td>@insumo.Empresa?.Nombre</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@insumo.Id" class="btn btn-primary">Editar</a>
                     <a asp-action="Delete" asp-route-id="@insumo.Id" class="btn btn-danger">Eliminar</a>

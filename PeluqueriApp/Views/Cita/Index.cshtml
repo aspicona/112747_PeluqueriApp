@@ -11,10 +11,10 @@
         <label for="IdEmpleado">Empleado</label>
         <select name="IdEmpleado" class="form-control" asp-items="ViewBag.Empleados"></select>
     </div>
-    <div class="form-group">
+    @*<div class="form-group">
         <label for="IdEmpresa">Empresa</label>
         <select name="IdEmpresa" class="form-control" asp-items="ViewBag.Empresas"></select>
-    </div>
+    </div>*@
     <button type="submit" class="btn btn-primary">Filtrar</button>
 </form>
 
@@ -23,7 +23,6 @@
         <tr>
             <th>Cliente</th>
             <th>Empleado</th>
-            <th>Empresa</th>
             <th>Fecha</th>
             <th>Estado</th>
             <th>Acciones</th>
@@ -35,13 +34,12 @@
             <tr>
                 <td>@cita.Cliente.Nombre @cita.Cliente.Apellido</td>
                 <td>@cita.Empleado.Nombre @cita.Empleado.Apellido</td>
-                <td>@cita.Empresa.Nombre</td>
                 <td>@cita.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>@cita.EstadoCita.Descripcion</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@cita.Id" class="btn btn-warning">Editar</a>
                     <a asp-action="Delete" asp-route-id="@cita.Id" class="btn btn-danger">Eliminar</a>
-                    <a asp-controller="Pago" asp-action="Pagar" asp-route-id="@cita.Id" class="btn btn-primary">Pagar con Mercado Pago</a>
+                    <a asp-controller="MercadoPago" asp-action="CreatePayment" asp-route-id="@cita.Id" class="btn btn-primary">Pagar con Mercado Pago</a>
 
                 </td>
             </tr>

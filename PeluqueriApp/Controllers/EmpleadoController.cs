@@ -1,33 +1,52 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PeluqueriApp.Models;
 using PeluqueriApp.Services;
 using System.Threading.Tasks;
-
-
 public class EmpleadoController : Controller
 {
     private readonly IEmpleadoService _empleadoService;
     private readonly IEmpresaService _empresaService;
     private readonly IEspecialidadService _especialidadService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public EmpleadoController(IEmpleadoService empleadoService, IEmpresaService empresaService, IEspecialidadService especialidadService)
+    public EmpleadoController(IEmpleadoService empleadoService, IEmpresaService empresaService, IEspecialidadService especialidadService, UserManager<ApplicationUser> userManager)
     {
         _empleadoService = empleadoService;
         _empresaService = empresaService;
         _especialidadService = especialidadService;
+        _userManager = userManager;
     }
+
+    private async Task<int?> GetEmpresaIdFromUser()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        return user?.IdEmpresa;
+    }
+
+    //public async Task<IActionResult> Index()
+    //{
+    //    var empleados = await _empleadoService.GetAllEmpleadosAsync();
+    //    return View(empleados);
+    //}
 
     public async Task<IActionResult> Index()
     {
-        var empleados = await _empleadoService.GetAllEmpleadosAsync();
+        var empresaId = await GetEmpresaIdFromUser();
+        if (empresaId == null)
+        {
+            return Unauthorized(); // Maneja el caso de que no haya empresa asignada
+        }
+
+        var empleados = await _empleadoService.GetEmpleadosByEmpresaIdAsync(empresaId.Value);
         return View(empleados);
     }
 
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        ViewBag.Empresas = new SelectList(await _empresaService.GetAllEmpresasAsync(), "Id", "Nombre");
+        
         ViewBag.Especialidades = new SelectList(await _especialidadService.GetAllEspecialidadesAsync(), "Id", "Descripcion");
         return View();
     }
@@ -38,10 +57,11 @@ public class EmpleadoController : Controller
     {
         if (ModelState.IsValid)
         {
+            empleado.IdEmpresa = (await GetEmpresaIdFromUser()).GetValueOrDefault();
             await _empleadoService.AddEmpleadoAsync(empleado);
             return RedirectToAction(nameof(Index));
         }
-        ViewBag.Empresas = new SelectList(await _empresaService.GetAllEmpresasAsync(), "Id", "Nombre");
+        
         ViewBag.Especialidades = new SelectList(await _especialidadService.GetAllEspecialidadesAsync(), "Id", "Descripcion");
         return View(empleado);
     }

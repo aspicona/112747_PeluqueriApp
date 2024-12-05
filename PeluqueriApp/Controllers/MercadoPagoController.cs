@@ -2,17 +2,26 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using PeluqueriApp.Models;
+using MercadoPago.Config;
+using MercadoPago.Client.Preference;
+using MercadoPago.Resource.Preference;
+using System.Globalization;
 
-namespace MercadoPagoApp.Controllers
+namespace PeluqueriApp.Controllers
 {
-    
-    public class MercadoPagoController : ControllerBase
+
+    public class MercadoPagoController : Controller
     {
         private readonly IMercadoPagoService _mercadoPagoService;
+        private readonly IConfiguration _configuration;
+        private readonly ICitaService _citaService;
 
-        public MercadoPagoController(IMercadoPagoService mercadoPagoService)
+        public MercadoPagoController(IMercadoPagoService mercadoPagoService, IConfiguration configuration, ICitaService citaService)
         {
             _mercadoPagoService = mercadoPagoService ?? throw new ArgumentNullException(nameof(mercadoPagoService));
+            _configuration = configuration;
+            _citaService = citaService;
         }
 
         [HttpGet("customerFind")]
@@ -37,35 +46,58 @@ namespace MercadoPagoApp.Controllers
             }
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreatePayment([FromForm] decimal amount, [FromForm] string description, [FromForm] string cardNumber, [FromForm] int expirationMonth, [FromForm] int expirationYear, [FromForm] string cardholderName, [FromForm] string securityCode, [FromForm] string email)
+        
+        public async Task<IActionResult> CreatePayment(int id)
         {
-            try
+            Cita cita = await _citaService.GetCitaByIdAsync(id);
+            //decimal formattedPrice = decimal.Parse(cita.PrecioFinal.ToString("F2", CultureInfo.InvariantCulture));
+            var accessToken = _configuration["MercadoPago:AccessToken"];
+            MercadoPagoConfig.AccessToken = accessToken;
+
+            var request = new PreferenceRequest
             {
-                // Generar el cardToken
-                var cardToken = await _mercadoPagoService.GenerateCardTokenAsync(cardNumber, expirationMonth, expirationYear, cardholderName, securityCode);
-
-                // Obtener el customerId del email proporcionado
-                var customerId = await _mercadoPagoService.GetCustomerIdByEmailAsync(email);
-
-                if (customerId == null)
+                Items = new List<PreferenceItemRequest>
+            {
+                new PreferenceItemRequest
                 {
-                    // Si no se encuentra el customerId, crear un nuevo cliente en MercadoPago
-                    customerId = await _mercadoPagoService.CreateCustomerAsync(email);
+                    Id = "1",
+                    Title = cita.Detalle,
+                    //Description = cita.Detalle,
+                    CurrencyId = "ARS",
+                    Quantity = 1,
+                    UnitPrice = cita.PrecioFinal
                 }
+            },
+                Payer = new PreferencePayerRequest
+                {
+                    Email = ""
+                },
+                BackUrls = new PreferenceBackUrlsRequest
+                {
+                    Success = "https://localhost:7230/Pago/Confirmacion",
+                    Failure = "https://localhost:7230/Pago/Error"
+                },
+                AutoReturn = "approved"
+            };
 
-                // Asociar la tarjeta al cliente (opcional, dependiendo de la lógica de tu aplicación)
-                // var cardId = await _mercadoPagoService.CreateCardAsync(customerId, cardToken);
+            var client = new PreferenceClient();
+            Preference preference = await client.CreateAsync(request);
 
-                // Crear el pago utilizando los datos del formulario y el cardToken generado
-                var payment = await _mercadoPagoService.CreatePaymentAsync(amount, description, customerId, cardToken, securityCode, email);
+            return Redirect(preference.SandboxInitPoint); // Para pruebas
+        }
 
-                return Ok(payment);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error al procesar el pago: {ex.Message}");
-            }
+        [HttpGet("Success")]
+        public IActionResult Success([FromQuery] PaymentResponse paymentResponse)
+        {
+            return Json(new { Message = "Pago Exitoso", paymentResponse });
+        }
+
+        [HttpGet("Failure")]
+        public IActionResult Failure([FromQuery] PaymentResponse paymentResponse)
+        {
+            return Json(new { Message = "Pago Fallido", paymentResponse });
         }
     }
+
+
 }

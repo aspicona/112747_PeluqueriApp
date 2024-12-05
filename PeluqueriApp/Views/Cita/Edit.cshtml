@@ -1,52 +1,116 @@
-﻿@model PeluqueriApp.Models.Cita
+﻿@model CitaViewModel
 
-<h2>Editar Cita</h2>
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
 
-<form asp-action="Edit">
     <input type="hidden" asp-for="Id" />
 
-    <div class="form-group">
-        <label for="IdCliente">Cliente</label>
-        <select asp-for="IdCliente" class="form-control" asp-items="ViewBag.Clientes"></select>
-        <span asp-validation-for="IdCliente" class="text-danger"></span>
-    </div>
+   <!-- Cliente (No Editable) -->
+<div class="mb-3">
+    <label>Cliente</label>
+    <input type="text" class="form-control" value="@ViewBag.ClienteNombre" readonly />
+    <input type="hidden" asp-for="IdCliente" />
+</div>
 
-    <div class="form-group">
-        <label for="IdEmpleado">Empleado</label>
-        <select asp-for="IdEmpleado" class="form-control" asp-items="ViewBag.Empleados"></select>
-        <span asp-validation-for="IdEmpleado" class="text-danger"></span>
-    </div>
+<!-- Empleado (No Editable) -->
+<div class="mb-3">
+    <label>Empleado</label>
+    <input type="text" class="form-control" value="@ViewBag.EmpleadoNombre" readonly />
+    <input type="hidden" asp-for="IdEmpleado" />
+</div>
 
-    <div class="form-group">
-        <label for="IdEmpresa">Empresa</label>
-        <select asp-for="IdEmpresa" class="form-control" asp-items="ViewBag.Empresas"></select>
-        <span asp-validation-for="IdEmpresa" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
+    <!-- Estado de la Cita -->
+    <div class="mb-3">
         <label for="IdEstadoCita">Estado de Cita</label>
         <select asp-for="IdEstadoCita" class="form-control" asp-items="ViewBag.EstadosCita"></select>
         <span asp-validation-for="IdEstadoCita" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label for="Fecha">Fecha y Hora</label>
-        <input asp-for="Fecha" type="datetime-local" class="form-control" />
-        <span asp-validation-for="Fecha" class="text-danger"></span>
+    <!-- Fecha -->
+    <div class="mb-3">
+        <label for="Fecha">Fecha</label>
+        <input type="date" asp-for="Fecha" class="form-control" />
     </div>
 
-    <div class="form-group">
-        <label for="PrecioEstimado">Precio Estimado</label>
-        <input asp-for="PrecioEstimado" class="form-control" />
-        <span asp-validation-for="PrecioEstimado" class="text-danger"></span>
+    <!-- Horario -->
+    <div class="mb-3">
+        <label for="HorarioSeleccionado">Horario</label>
+        <select asp-for="HorarioSeleccionado" class="form-control" asp-items="ViewBag.HorariosDisponibles"></select>
+        <span asp-validation-for="HorarioSeleccionado" class="text-danger"></span>
     </div>
 
+    <!-- Servicios -->
     <div class="form-group">
+    <label>Servicios</label>
+    @foreach (var servicio in ViewBag.Servicios as IEnumerable<SelectListItem>)
+    {
+        <div>
+            <input type="checkbox" name="ServiciosSeleccionados" value="@servicio.Value"
+                   @(Model.ServiciosSeleccionados?.Contains(int.Parse(servicio.Value)) ?? false ? "checked" : "") />
+            @servicio.Text
+        </div>
+    }
+</div>
+    <!-- Precio Final -->
+    <div class="mb-3">
         <label for="PrecioFinal">Precio Final</label>
-        <input asp-for="PrecioFinal" class="form-control" />
-        <span asp-validation-for="PrecioFinal" class="text-danger"></span>
+        <input type="decimal" asp-for="PrecioFinal" class="form-control" />
     </div>
 
+    <!-- Botón para abrir el modal de productos -->
+    <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#productosModal">
+        Seleccionar Productos
+    </button>
+    <br />
+    <!-- Modal de productos -->
+    <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productosModalLabel">Seleccionar Productos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @for (var i = 0; i < Model.ProductosDisponibles?.Count; i++)
+                    {
+                        <div class="d-flex align-items-center mb-3">
+                            <!-- Checkbox para seleccionar productos -->
+                            <input type="checkbox" name="ProductosDisponibles[@i].Seleccionado"
+                                   id="ProductoSeleccionado_@i"
+                                   value="true"
+                                   @(Model.ProductosDisponibles[i].Seleccionado ? "checked" : "")
+                                   class="form-check-input" />
+                            <input type="hidden" name="ProductosDisponibles[@i].Seleccionado" value="false" />
+
+                            <!-- Nombre del producto -->
+                            <label for="ProductoSeleccionado_@i" class="ms-2">@Model.ProductosDisponibles[i].NombreProducto</label>
+                            <input type="hidden" name="ProductosDisponibles[@i].NombreProducto"
+                                   value="@Model.ProductosDisponibles[i].NombreProducto" />
+
+                            <!-- Cantidad -->
+                            <input type="number" name="ProductosDisponibles[@i].Cantidad"
+                                   value="@Model.ProductosDisponibles[i].Cantidad"
+                                   placeholder="Cantidad"
+                                   class="form-control ms-3"
+                                   style="width: 100px;" />
+
+                            <!-- ID Producto -->
+                            <input type="hidden" name="ProductosDisponibles[@i].ProductoId"
+                                   value="@Model.ProductosDisponibles[i].ProductoId" />
+                                   <!-- Nombre del producto -->
+                            <input type="hidden" name="ProductosSeleccionados[@i].NombreProducto"
+                                   value="@Model.ProductosDisponibles[i].NombreProducto" />
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón para guardar -->
     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
 </form>
 

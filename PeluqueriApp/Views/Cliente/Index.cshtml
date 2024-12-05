@@ -10,7 +10,6 @@
             <th>Domicilio</th>
             <th>Teléfono</th>
             <th>Email</th>
-            <th>Empresa</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -23,7 +22,6 @@
                 <td>@cliente.Domicilio</td>
                 <td>@cliente.Telefono</td>
                 <td>@cliente.Email</td>
-                <td>@cliente.Empresa.Nombre</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@cliente.Id" class="btn btn-primary">Editar</a>
                     <a asp-action="Delete" asp-route-id="@cliente.Id" class="btn btn-danger">Eliminar</a>

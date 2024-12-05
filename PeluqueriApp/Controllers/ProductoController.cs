@@ -10,17 +10,33 @@ public class ProductoController : Controller
 {
     private readonly IProductoService _productoService;
     private readonly IEmpresaService _empresaService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ProductoController(IProductoService productoService, IEmpresaService empresaService)
+    public ProductoController(IProductoService productoService, IEmpresaService empresaService, UserManager<ApplicationUser> userManager)
     {
         _productoService = productoService;
         _empresaService = empresaService;
+        _userManager = userManager;
+    }
+
+    private async Task<int?> GetEmpresaIdFromUser()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        return user?.IdEmpresa;
     }
 
     // Listar productos
     public async Task<IActionResult> Index()
     {
-        var productos = await _productoService.GetAllProductosAsync();
+        var empresaId = (await GetEmpresaIdFromUser()).GetValueOrDefault();
+
+        if (empresaId == 0)
+        {
+            return Unauthorized();
+        }
+
+        var productos = await _productoService.GetProductosByEmpresaIdAsync(empresaId);
+
         return View(productos);
     }
 
@@ -38,6 +54,7 @@ public class ProductoController : Controller
     {
         if (ModelState.IsValid)
         {
+            producto.EmpresaId = (await GetEmpresaIdFromUser()).GetValueOrDefault();
             await _productoService.AddProductoAsync(producto);
             return RedirectToAction(nameof(Index));
         }

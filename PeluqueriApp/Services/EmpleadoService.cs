@@ -23,6 +23,14 @@ public class EmpleadoService : IEmpleadoService
         return await _context.Empleados.Include(e => e.Empresa).Include(e => e.Especialidad).FirstOrDefaultAsync(e => e.Id == id);
     }
 
+    public async Task<List<Empleado>> GetEmpleadosByEmpresaIdAsync(int idEmpresa)
+    {
+        return await _context.Empleados
+            .Where(e => e.IdEmpresa == idEmpresa)
+            .Include(e => e.Especialidad) // Incluye relaciones necesarias
+            .ToListAsync();
+    }
+
     public async Task AddEmpleadoAsync(Empleado empleado)
     {
         _context.Empleados.Add(empleado);

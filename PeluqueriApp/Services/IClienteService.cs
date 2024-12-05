@@ -6,6 +6,7 @@ namespace PeluqueriApp.Services
     {
         Task<IEnumerable<Cliente>> GetAllClientesAsync();
         Task<Cliente> GetClienteByIdAsync(int id);
+        Task<List<Cliente>> GetClientesByEmpresaIdAsync(int empresaId);
         Task AddClienteAsync(Cliente cliente);
         Task UpdateClienteAsync(Cliente cliente);
         Task DeleteClienteAsync(int id);

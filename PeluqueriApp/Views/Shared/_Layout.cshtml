@@ -5,8 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PeluqueriApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PeluqueriApp.styles.css" asp-append-version="true" />
+    <style>
+        @{
+            // Color dinámico desde el ViewBag con valor por defecto
+            var colorPrincipal = ViewBag.ColorPrincipal ?? "#ff0202";
+        }
+        #sidebar {
+            background-color: #f8f9fa; /* Fondo claro */
+            height: 100vh; /* Altura completa de la ventana */
+        }
+
+        #sidebar .nav-link {
+            padding: 15px;
+            border-radius: 0; /* Sin bordes redondeados */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            color: black; /* Texto negro */
+        }
+
+        #sidebar .nav-link:hover {
+            background-color: @colorPrincipal; /* Color dinámico o rojo por defecto */
+            color: white; /* Texto blanco */
+        }
+
+        #sidebar .nav-link.active {
+            background-color: @colorPrincipal; /* Color dinámico o rojo por defecto */
+            color: white; /* Texto blanco */
+        }
+
+        #sidebar h4 {
+            color: @colorPrincipal; /* Color dinámico o rojo por defecto */
+            text-align: center; /* Centramos el texto */
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-link {
+            text-align: left; /* Alineamos texto e ícono a la izquierda */
+        }
+    </style>
 </head>
 <body>
     @if (User.Identity.IsAuthenticated)
@@ -22,39 +61,71 @@
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><i class="bi bi-house"></i> Inicio</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="TermsAndConditions"><i class="bi bi-file-earmark-text mr-2"></i> Términos y Condiciones</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="FAQ"><i class="bi bi-question-circle mr-2"></i> Preguntas Frecuentes</a>
                             </li>
                         </ul>
                     </div>
-                    <form asp-action="Logout" method="post" style="display:inline">
-                        <button type="submit" class="btn btn-link">Logout</button>
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-dark"><i class="bi bi-box-arrow-right"></i> Salir</button>
                     </form>
                 </div>
             </nav>
-        </header>
+        </header>       
 
-        <!-- Menú lateral -->
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-3">
-                    <nav class="nav flex-column bg-light p-3">
-                        <h4>Menú</h4>
-                        <a class="nav-link" asp-area="" asp-controller="Empresa" asp-action="Index">Empresas</a>
-                        <a class="nav-link" asp-area="" asp-controller="Producto" asp-action="Index">Productos</a>
-                        <a class="nav-link" asp-area="" asp-controller="Insumo" asp-action="Index">Insumos</a>
-                        <a class="nav-link" asp-area="" asp-controller="Servicio" asp-action="Index">Servicios</a>
-                        <a class="nav-link" asp-area="" asp-controller="Cliente" asp-action="Index">Clientes</a>
-                        <a class="nav-link" asp-area="" asp-controller="Cita" asp-action="Index">Citas</a>
-                        <a class="nav-link" asp-area="" asp-controller="Empleado" asp-action="Index">Empleados</a>
-                        <a class="nav-link" asp-area="" asp-controller="Pago" asp-action="Index">Pagos</a>
-                    </nav>
-                </div>
-                
+                <!-- Menú lateral -->
+                <div class="col-md-2 shadow-sm" id="sidebar">
+    <nav class="navbar navbar-expand-lg d-flex flex-column align-items-center">
+        <!-- Logo centrado y más grande -->
+        <div class="mb-3">
+            <img src="@ViewBag.Logo" alt="Logo" style="height: 80px; display: block; margin: 0 auto;">
+        </div>
+        <!-- Nombre de la empresa con color principal -->
+        <h4 style="color: @ViewBag.ColorPrincipal ?? '#ff0202'; text-align: center;">
+            @ViewBag.EmpresaNombre
+        </h4>
+    </nav>
+    <nav class="nav flex-column" style="color:black; text-align:center">
+        <a class="nav-link" asp-area="" asp-controller="Empresa" asp-action="Index">
+            <i class="bi bi-building mr-2"></i> Empresas
+        </a>
+        <a class="nav-link" asp-area="" asp-controller="Producto" asp-action="Index">
+            <i class="bi bi-box-seam mr-2"></i> Productos
+        </a>
+        <a class="nav-link" asp-area="" asp-controller="Insumo" asp-action="Index">
+            <i class="bi bi-tools mr-2"></i> Insumos
+        </a>
+        <a class="nav-link" asp-area="" asp-controller="Servicio" asp-action="Index">
+            <i class="bi bi-scissors mr-2"></i> Servicios
+        </a>
+        <a class="nav-link" asp-area="" asp-controller="Cliente" asp-action="Index">
+            <i class="bi bi-people mr-2"></i> Clientes
+        </a>
+        <a class="nav-link" asp-area="" asp-controller="Cita" asp-action="Index">
+            <i class="bi bi-calendar-check mr-2"></i> Citas
+        </a>
+        <a class="nav-link" asp-area="" asp-controller="Empleado" asp-action="Index">
+            <i class="bi bi-person-badge mr-2"></i> Empleados
+        </a>
+        <a class="nav-link" asp-area="" asp-controller="Pago" asp-action="Index">
+            <i class="bi bi-credit-card mr-2"></i> Pagos
+        </a>
+        <a class="nav-link" asp-area="" asp-controller="Reporte" asp-action="Index">
+            <i class="bi bi-graph-up mr-2"></i> Reportes
+        </a>
+    </nav>
+</div>
+
+
                 <!-- Contenido principal -->
-                <div class="col-md-9">
+                <div class="col-md-10">
                     <main role="main" class="pb-3">
                         @RenderBody()
                     </main>
@@ -62,12 +133,6 @@
             </div>
         </div>
     }
-
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
     @if (User.Identity.IsAuthenticated)
     {
@@ -81,6 +146,18 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const links = document.querySelectorAll("#sidebar .nav-link");
+
+            // Al hacer clic, desactiva todos los enlaces y activa el clicado
+            links.forEach(link => {
+                link.addEventListener("click", function () {
+                    links.forEach(l => l.classList.remove("active"));
+                    this.classList.add("active");
+                });
+            });
+        });
+    </script>
 </body>
 </html>

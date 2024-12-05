@@ -24,5 +24,13 @@ namespace PeluqueriApp.Models
         public int EmpresaId { get; set; }
         [ValidateNever]
         public Empresa Empresa { get; set; }
+       
     }
+    public class InsumoUtilizadoViewModel
+    {
+        public int IdInsumo { get; set; }
+        public string NombreInsumo { get; set; }
+        public decimal CantidadUtilizada { get; set; }
+    }
+
 }

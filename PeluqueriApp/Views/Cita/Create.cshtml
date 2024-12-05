@@ -1,51 +1,114 @@
-﻿@model PeluqueriApp.Models.Cita
+﻿@model CitaViewModel
 
-<h2>Crear Nueva Cita</h2>
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
 
-<form asp-action="Create">
-    <div class="form-group">
-        <label for="IdCliente">Cliente</label>
-        <select asp-for="IdCliente" class="form-control" asp-items="ViewBag.Clientes"></select>
-        <span asp-validation-for="IdCliente" class="text-danger"></span>
+    <div class="mb-3">
+        <label for="Cliente">Cliente</label>
+        @Html.DropDownListFor(m => m.IdCliente, ViewBag.Clientes as SelectList, "Seleccione un cliente", new { @class = "form-select" })
     </div>
 
-    <div class="form-group">
-        <label for="IdEmpleado">Empleado</label>
-        <select asp-for="IdEmpleado" class="form-control" asp-items="ViewBag.Empleados"></select>
-        <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+    <div class="mb-3">
+    <label for="Empleado">Empleado</label>
+    @Html.DropDownListFor(m => m.IdEmpleado, ViewBag.Empleados as SelectList, "Seleccione un empleado", new { @class = "form-select" })
+</div>
+
+<div class="mb-3">
+    <label for="Fecha">Fecha</label>
+    <input type="date" asp-for="Fecha" class="form-control" />
+</div>
+
+<div class="mb-3">
+    <label for="Horario">Horario</label>
+    <select asp-for="HorarioSeleccionado" class="form-select">
+        @foreach (var horario in ViewBag.HorariosDisponibles as List<string>)
+        {
+            <option value="@horario">@horario</option>
+        }
+    </select>
+</div>
+
+
+    <div class="mb-3">
+        <label>Servicios</label>
+        @foreach (var servicio in ViewBag.Servicios as IEnumerable<dynamic>)
+        {
+            <div>
+                <input type="checkbox" name="ServiciosSeleccionados" value="@servicio.Id" />
+                @servicio.Nombre
+            </div>
+        }
     </div>
 
-    <div class="form-group">
-        <label for="IdEmpresa">Empresa</label>
-        <select asp-for="IdEmpresa" class="form-control" asp-items="ViewBag.Empresas"></select>
-        <span asp-validation-for="IdEmpresa" class="text-danger"></span>
-    </div>
+    <!-- Botón para abrir el modal de productos -->
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#productosModal">
+        Seleccionar Productos
+    </button>
+    
+    <!-- Modal de productos -->
+    <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productosModalLabel">Seleccionar Productos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @for (var i = 0; i < Model.ProductosDisponibles.Count; i++)
+                    {
+                        <div class="d-flex align-items-center mb-3">
+                            <!-- Checkbox para seleccionar un producto -->
+                            <input type="checkbox" name="ProductosSeleccionados[@i].Seleccionado"
+                                   id="ProductoSeleccionado_@i"
+                                   value="true"
+                                   class="form-check-input" />
+                            <input type="hidden" name="ProductosSeleccionados[@i].Seleccionado" value="false" />
 
-    <div class="form-group">
-        <label for="IdEstadoCita">Estado de Cita</label>
-        <select asp-for="IdEstadoCita" class="form-control" asp-items="ViewBag.EstadosCita"></select>
-        <span asp-validation-for="IdEstadoCita" class="text-danger"></span>
-    </div>
+                            <!-- Nombre del producto -->
+                            <label for="ProductoSeleccionado_@i" class="ms-2">@Model.ProductosDisponibles[i].NombreProducto</label>
 
-    <div class="form-group">
-        <label for="Fecha">Fecha y Hora</label>
-        <input asp-for="Fecha" type="datetime-local" class="form-control" />
-        <span asp-validation-for="Fecha" class="text-danger"></span>
-    </div>
+                            <!-- Cantidad -->
+                            <input type="number" name="ProductosSeleccionados[@i].Cantidad"
+                                   value="@Model.ProductosDisponibles[i].Cantidad"
+                                   placeholder="Cantidad"
+                                   class="form-control ms-3" style="width: 100px;" />
 
-    <div class="form-group">
-        <label for="PrecioEstimado">Precio Estimado</label>
-        <input asp-for="PrecioEstimado" class="form-control" />
-        <span asp-validation-for="PrecioEstimado" class="text-danger"></span>
-    </div>
+                            <!-- ID del producto -->
+                            <input type="hidden" name="ProductosSeleccionados[@i].ProductoId"
+                                   value="@Model.ProductosDisponibles[i].ProductoId" />
 
-    <div class="form-group">
-        <label for="PrecioFinal">Precio Final</label>
-        <input asp-for="PrecioFinal" class="form-control" />
-        <span asp-validation-for="PrecioFinal" class="text-danger"></span>
+                            <!-- Nombre del producto -->
+                            <input type="hidden" name="ProductosSeleccionados[@i].NombreProducto"
+                                   value="@Model.ProductosDisponibles[i].NombreProducto" />
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <button type="submit" class="btn btn-primary">Guardar</button>
+    <br />
+    <button type="submit" class="btn btn-primary mt-3">Crear Cita</button>
 </form>
+<script>
+    document.getElementById("IdEmpleado").addEventListener("change", function () {
+        const empleadoId = this.value;
+        const fecha = document.getElementById("Fecha").value;
 
-<a asp-action="Index" class="btn btn-secondary">Volver</a>
+        fetch(`/Cita/GetAvailableSlots?empleadoId=${empleadoId}&fecha=${fecha}`)
+            .then(response => response.json())
+            .then(data => {
+                const horarioSelect = document.getElementById("HorarioSeleccionado");
+                horarioSelect.innerHTML = ""; // Limpiar horarios actuales
+
+                data.forEach(horario => {
+                    const option = document.createElement("option");
+                    option.value = horario;
+                    option.textContent = horario;
+                    horarioSelect.appendChild(option);
+                });
+            });
+    });
+</script>

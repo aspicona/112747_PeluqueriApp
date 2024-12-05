@@ -9,8 +9,7 @@
             <th>Nombre</th>
             <th>Descripción</th>
             <th>Precio Base</th>
-            <th>Duración Estimada</th>
-            <th>Empresa</th>
+            <th>Duración Estimada</th>           
             <th>Acciones</th>
         </tr>
     </thead>
@@ -22,7 +21,6 @@
                 <td>@servicio.Descripcion</td>
                 <td>AR$ @servicio.PrecioBase.ToString("N2", new CultureInfo("es-AR"))</td>
                 <td>@servicio.DuracionEstimada minutos</td>
-                <td>@servicio.Empresa?.Nombre</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@servicio.Id" class="btn btn-primary">Editar</a>
                     <a asp-action="Delete" asp-route-id="@servicio.Id" class="btn btn-danger">Eliminar</a>

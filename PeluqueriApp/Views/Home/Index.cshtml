@@ -1,8 +1,37 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="display-4 fw-bold">Bienvenido a PeluqueriApp</h1>
+        <p class="lead text-muted">La solución integral para la gestión de tu peluquería</p>
+    </div>
+
+    <div class="row mt-5">
+        <!-- Sección de características -->
+        <div class="col-lg-4 text-center">
+            @*<img src="~/images/appointments.svg" alt="Icono de citas" class="mb-3" style="width: 80px;">*@
+            <h3 class="fw-bold">Gestión de Citas</h3>
+            <p class="text-muted">Organiza y programa citas de forma rápida y sencilla, brindando una mejor experiencia a tus clientes.</p>
+        </div>
+        <div class="col-lg-4 text-center">
+            @*<img src="~/images/inventory.svg" alt="Icono de inventario" class="mb-3" style="width: 80px;">*@
+            <h3 class="fw-bold">Control de Inventario</h3>
+            <p class="text-muted">Lleva un seguimiento de todos los insumos y productos de tu peluquería, asegurando que siempre tengas lo necesario.</p>
+        </div>
+        <div class="col-lg-4 text-center">
+            @*<img src="~/images/reports.svg" alt="Icono de reportes" class="mb-3" style="width: 80px;">*@
+            <h3 class="fw-bold">Reportes y Análisis</h3>
+            <p class="text-muted">Obtén informes detallados de ingresos y rendimiento para tomar decisiones informadas.</p>
+        </div>
+    </div>
+
+    <!-- Sección adicional sobre la app -->
+    <div class="row mt-5">
+        <div class="col text-center">
+            <h2 class="fw-bold">Optimiza la gestión de tu peluquería</h2>
+            <p class="text-muted">PeluqueriApp es la herramienta ideal para mejorar la eficiencia de tu negocio. Con nuestras funcionalidades de administración de citas, inventario, y análisis de rendimiento, podrás enfocarte en brindar el mejor servicio a tus clientes mientras nosotros nos encargamos del resto.</p>
+        </div>
+    </div>
 </div>

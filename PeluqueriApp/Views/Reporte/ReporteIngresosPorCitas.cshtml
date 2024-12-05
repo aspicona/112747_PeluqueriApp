@@ -1,0 +1,86 @@
+﻿@using System.Text.Json
+@using System.Globalization
+@model List<IngresoPorCita>
+@{
+    ViewData["Title"] = "Reporte de Ingresos por Fechas";
+
+    // Serializamos los datos de etiquetas e ingresos para pasarlos a JavaScript
+    var etiquetas = Model != null ? Model.Select(i => i.Fecha).ToList() : new List<string>();
+    var ingresos = Model != null ? Model.Select(i => i.Ingreso).ToList() : new List<decimal>();
+}
+
+<div class="container mt-4">
+    <h2>Reporte de Ingresos por Fechas</h2>
+
+    <form asp-action="ReporteIngresosPorCitas" method="get" class="form-inline mb-3">
+        <label for="startDate" class="mr-2">Fecha de Inicio:</label>
+        <input type="date" id="startDate" name="startDate" class="form-control mr-2" required />
+
+        <label for="endDate" class="mr-2">Fecha de Fin:</label>
+        <input type="date" id="endDate" name="endDate" class="form-control mr-2" required />
+
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+
+    @if (Model != null && Model.Any())
+    {
+        <h3 class="mt-4">Resultados</h3>
+        <table class="table table-bordered mt-2">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Ingreso</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ingreso in Model)
+                {
+                    <tr>
+                        <td>@ingreso.Fecha</td>
+                        <td>AR$ @ingreso.Ingreso.ToString("N2", new CultureInfo("es-AR"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">No se encontraron ingresos para el rango de fechas seleccionado.</p>
+    }
+
+    <div class="mt-4">
+        <canvas id="myChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Obtenemos los datos desde Razor
+    const etiquetas = @Html.Raw(JsonSerializer.Serialize(etiquetas));
+    const ingresos = @Html.Raw(JsonSerializer.Serialize(ingresos));
+
+    // Configuración del gráfico
+    const ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: etiquetas,
+            datasets: [{
+                label: 'Ingresos (AR$)',
+                data: ingresos,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

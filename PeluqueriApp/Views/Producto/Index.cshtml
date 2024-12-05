@@ -1,5 +1,5 @@
 ﻿@using System.Globalization
-@model IEnumerable<Producto>
+@model IEnumerable<ProductoViewModel>
 
 <h2>Listado de Productos</h2>
 
@@ -11,7 +11,6 @@
             <th>Costo</th>
             <th>Precio</th>
             <th>Stock Disponible</th>
-            <th>Empresa</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -19,15 +18,14 @@
         @foreach (var producto in Model)
         {
             <tr>
-                <td>@producto.Nombre</td>
+                <td>@producto.NombreProducto</td>
                 <td>@producto.Descripcion</td>
                 <td>AR$ @producto.Costo.ToString("N2", new CultureInfo("es-AR"))</td>
                 <td>AR$ @producto.Precio.ToString("N2", new CultureInfo("es-AR"))</td>
                 <td>@producto.StockDisponible</td>
-                <td>@producto.Empresa?.Nombre</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@producto.Id" class="btn btn-primary">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@producto.Id" class="btn btn-danger">Eliminar</a>
+                    <a asp-action="Edit" asp-route-id="@producto.ProductoId" class="btn btn-primary">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@producto.ProductoId" class="btn btn-danger">Eliminar</a>
                 </td>
             </tr>
         }

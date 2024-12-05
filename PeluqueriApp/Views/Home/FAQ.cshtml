@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Preguntas Frecuentes";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Preguntas Frecuentes (FAQ)</h1>
+    
+    <div class="accordion" id="faqAccordion">
+        
+        <!-- Pregunta 1 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    1. ¿Cómo puedo registrarme en la aplicación?
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Para registrarte, dirígete a la página de registro y completa el formulario con tus datos personales, como nombre, correo electrónico y contraseña. Una vez completado, podrás iniciar sesión en la aplicación.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    2. ¿Qué puedo hacer si olvido mi contraseña?
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Si has olvidado tu contraseña, puedes utilizar la opción de "Recuperar contraseña" en la página de inicio de sesión. Te enviaremos un enlace a tu correo electrónico para que puedas restablecer tu contraseña de forma segura.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregunta 3 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    3. ¿Cómo puedo reservar una cita o servicio?
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Para reservar una cita, navega a la sección de servicios y selecciona el que deseas. Luego elige una fecha y hora disponible, y confirma tu reserva. Recibirás una notificación de confirmación con los detalles de tu cita.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="mt-4 text-center">
+        <p class="text-muted">¿Tienes más preguntas? Contacta con nosotros a través de <a href="mailto:soporte@peluqueriapp.com">soporte@peluqueriapp.com</a> para obtener ayuda personalizada.</p>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+﻿@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Reporte de Insumos Utilizados";
+    var insumosPorUnidad = ViewBag.InsumosPorUnidad as Dictionary<string, Dictionary<string, decimal>>;
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container mt-4">
+    <h2 class="text-center">Reporte de Insumos Utilizados según Unidad de Medida</h2>
+
+    <!-- Formulario para filtrar por fechas -->
+    <form asp-action="ReporteInsumosUtilizados" method="get" class="row g-3 mt-3">
+        <div class="col-md-4">
+            <label for="startDate" class="form-label">Fecha de Inicio</label>
+            <input type="date" id="startDate" name="startDate" class="form-control"
+                   value="@ViewBag.StartDate?.ToString("yyyy-MM-dd")" required />
+        </div>
+        <div class="col-md-4">
+            <label for="endDate" class="form-label">Fecha de Fin</label>
+            <input type="date" id="endDate" name="endDate" class="form-control"
+                   value="@ViewBag.EndDate?.ToString("yyyy-MM-dd")" required />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </form>
+
+    @if (insumosPorUnidad != null && insumosPorUnidad.Any())
+    {
+        <!-- Contenedor de tablas y gráficos -->
+        <div class="row mt-4">
+            @foreach (var unidad in insumosPorUnidad)
+            {
+                <div class="col-md-6">
+                    <!-- Tabla de datos -->
+                    <h4 class="mt-4 text-center">@unidad.Key</h4>
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Insumo</th>
+                                <th>Cantidad Utilizada (@unidad.Key)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var insumo in unidad.Value)
+                            {
+                                <tr>
+                                    <td>@insumo.Key</td>
+                                    <td style="text-align: right;">@insumo.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-md-6 d-flex justify-content-center align-items-center flex-column">
+                    <!-- Gráfico de pie -->
+                    <div class="mt-4" style="max-width: 400px; max-height: 400px;">
+                        <canvas id="chart-@unidad.Key"></canvas>
+                    </div>
+                    <br>
+                    <script>
+                        const etiquetas_@unidad.Key = @Html.Raw(JsonSerializer.Serialize(unidad.Value.Keys.ToList()));
+                        const cantidades_@unidad.Key = @Html.Raw(JsonSerializer.Serialize(unidad.Value.Values.ToList()));
+
+                        const ctx_@unidad.Key = document.getElementById('chart-@unidad.Key').getContext('2d');
+                        new Chart(ctx_@unidad.Key, {
+                            type: 'pie',
+                            data: {
+                                labels: etiquetas_@unidad.Key,
+                                datasets: [{
+                                    data: cantidades_@unidad.Key,
+                                    backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#4bc0c0', '#9966ff'],
+                                    hoverOffset: 4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                </div>               
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted text-center mt-4">No se encontraron datos para el rango de fechas seleccionado.</p>
+    }
+</div>

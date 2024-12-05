@@ -23,10 +23,5 @@
         <input asp-for="StockDisponible" class="form-control" />
         <span asp-validation-for="StockDisponible" class="text-danger"></span>
     </div>
-    <div class="mb-3">
-        <label asp-for="EmpresaId" class="form-label">Empresa</label>
-        <select asp-for="EmpresaId" class="form-control" asp-items="ViewBag.Empresas"></select>
-        <span asp-validation-for="EmpresaId" class="text-danger"></span>
-    </div>
     <button type="submit" class="btn btn-primary">Guardar</button>
 </form>

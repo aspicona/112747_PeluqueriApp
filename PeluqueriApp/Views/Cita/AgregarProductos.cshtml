@@ -1,0 +1,11 @@
+﻿@model PeluqueriApp.Models.Cita
+
+<h2>Agregar Productos</h2>
+
+<form asp-action="AgregarProducto">
+    <select name="IdProducto" asp-items="ViewBag.Productos" class="form-control"></select>
+    <input type="number" name="Cantidad" placeholder="Cantidad" class="form-control" />
+    <button type="submit" class="btn btn-success">Agregar</button>
+</form>
+
+<a asp-action="Index" class="btn btn-secondary">Cancelar</a>

@@ -26,6 +26,14 @@ namespace PeluqueriApp.Services
                                  .FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        public async Task<List<Cliente>> GetClientesByEmpresaIdAsync(int empresaId)
+        {
+            return await _context.Clientes
+                .Include(c => c.Empresa)
+                .Where(c => c.EmpresaId == empresaId)
+                .ToListAsync();
+        }
+
         public async Task AddClienteAsync(Cliente cliente)
         {
             _context.Clientes.Add(cliente);

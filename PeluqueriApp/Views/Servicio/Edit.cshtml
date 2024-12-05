@@ -1,4 +1,4 @@
-﻿@model Servicio
+﻿@model ServicioViewModel
 
 <h2>Editar Servicio</h2>
 
@@ -7,34 +7,38 @@
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
-        <label asp-for="Nombre" class="form-label"></label>
+        <label asp-for="Nombre" class="form-label">Nombre</label>
         <input asp-for="Nombre" class="form-control" />
         <span asp-validation-for="Nombre" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Descripcion" class="form-label"></label>
+        <label asp-for="Descripcion" class="form-label">Descripción</label>
         <textarea asp-for="Descripcion" class="form-control"></textarea>
         <span asp-validation-for="Descripcion" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="PrecioBase" class="form-label"></label>
-        <input asp-for="PrecioBase" class="form-control" type="decimal" />
+        <label asp-for="PrecioBase" class="form-label">Precio Base</label>
+        <input asp-for="PrecioBase" class="form-control" type="decimal" step="0.01" />
         <span asp-validation-for="PrecioBase" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="DuracionEstimada" class="form-label"></label>
-        <input asp-for="DuracionEstimada" class="form-control" type="number" />
+        <label asp-for="DuracionEstimada" class="form-label">Duración Estimada (en minutos)</label>
+        <input asp-for="DuracionEstimada" class="form-control" type="decimal" />
         <span asp-validation-for="DuracionEstimada" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="EmpresaId" class="form-label">Empresa</label>
-        <select asp-for="EmpresaId" class="form-control" asp-items="@(new SelectList(ViewBag.Empresas, "Id", "Nombre"))"></select>
-        <span asp-validation-for="EmpresaId" class="text-danger"></span>
-    </div>
+    <h4 class="mt-4">Insumos</h4>
+    @foreach (var insumo in Model.InsumosAsignados)
+    {
+        <div class="mb-3">
+            <input type="checkbox" asp-for="@insumo.Seleccionado" class="form-check-input" />
+            <label class="form-check-label">@insumo.NombreInsumo</label>
+            <input type="decimal" asp-for="@insumo.CantidadNecesaria" class="form-control mt-2" />
+        </div>
+    }
 
     <button type="submit" class="btn btn-primary">Guardar cambios</button>
 </form>

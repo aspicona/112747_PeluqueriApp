@@ -98,10 +98,17 @@ public class PagoController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public IActionResult ConfirmacionPago(int idPago)
+    public IActionResult Confirmacion(int idPago)
     {
         // Actualizar el estado del pago en la base de datos
         _pagoService.ActualizarEstadoPagoAsync(idPago, true); // Ejemplo de actualización
         return View("Confirmacion");
+    }
+
+    public IActionResult Error(int idPago)
+    {
+        // Actualizar el estado del pago en la base de datos
+        _pagoService.ActualizarEstadoPagoAsync(idPago, false); // Ejemplo de actualización
+        return View("Error");
     }
 }

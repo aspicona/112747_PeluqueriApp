@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PeluqueriApp.Models;
 using PeluqueriApp.Services;
@@ -10,24 +11,39 @@ public class InsumoController : Controller
     private readonly IInsumoService _insumoService;
     private readonly IEmpresaService _empresaService;
     private readonly IUnidadDeMedidaService _unidadDeMedidaService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public InsumoController(IInsumoService insumoService, IEmpresaService empresaService, IUnidadDeMedidaService unidadDeMedidaService)
+    public InsumoController(IInsumoService insumoService, IEmpresaService empresaService, IUnidadDeMedidaService unidadDeMedidaService, UserManager<ApplicationUser> userManager)
     {
         _insumoService = insumoService;
         _empresaService = empresaService;
         _unidadDeMedidaService = unidadDeMedidaService;
+        _userManager = userManager;
+    }
+
+    private async Task<int?> GetEmpresaIdFromUser()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        return user?.IdEmpresa;
     }
 
     // Listar insumos
     public async Task<IActionResult> Index()
     {
-        var insumos = await _insumoService.GetAllInsumosAsync();
+        var empresaId = (await GetEmpresaIdFromUser()).GetValueOrDefault();
+
+        if (empresaId == 0)
+        {
+            return Unauthorized();
+        }
+
+        var insumos = await _insumoService.GetInsumosByEmpresaIdAsync(empresaId);
+
         return View(insumos);
     }
 
     private async Task SetViewBagsAsync()
     {
-        ViewBag.Empresas = new SelectList(await _empresaService.GetAllEmpresasAsync(), "Id", "Nombre");
         ViewBag.UnidadesDeMedida = new SelectList(await _unidadDeMedidaService.GetAllUnidadesAsync(), "Id", "Nombre");
     }
 
@@ -46,6 +62,7 @@ public class InsumoController : Controller
     {
         if (ModelState.IsValid)
         {
+            insumo.EmpresaId = (await GetEmpresaIdFromUser()).GetValueOrDefault();
             await _insumoService.AddInsumoAsync(insumo);
             return RedirectToAction(nameof(Index));
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PeluqueriApp.Models;
 using PeluqueriApp.Services;
@@ -9,17 +10,32 @@ public class ClienteController : Controller
 {
     private readonly IClienteService _clienteService;
     private readonly IEmpresaService _empresaService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ClienteController(IClienteService clienteService, IEmpresaService empresaService)
+    public ClienteController(IClienteService clienteService, IEmpresaService empresaService, UserManager<ApplicationUser> userManager)
     {
         _clienteService = clienteService;
         _empresaService = empresaService;
+        _userManager = userManager;
+    }
+    private async Task<int?> GetEmpresaIdFromUser()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        return user?.IdEmpresa;
     }
 
     // Listar todos los clientes
     public async Task<IActionResult> Index()
     {
-        var clientes = await _clienteService.GetAllClientesAsync();
+        var empresaId = (await GetEmpresaIdFromUser()).GetValueOrDefault();
+
+        if (empresaId == 0)
+        {
+            return Unauthorized();
+        }
+
+        var clientes = await _clienteService.GetClientesByEmpresaIdAsync(empresaId);
+
         return View(clientes);
     }
 
@@ -27,8 +43,6 @@ public class ClienteController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        // Cargar las empresas en el ViewBag para el dropdown en el formulario
-        ViewBag.Empresas = new SelectList(await _empresaService.GetAllEmpresasAsync(), "Id", "Nombre");
         return View();
     }
 
@@ -37,9 +51,10 @@ public class ClienteController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Cliente cliente)
     {
-        cliente.FechaCreacion = DateTime.Now;
         if (ModelState.IsValid)
         {
+            cliente.FechaCreacion = DateTime.Now;
+            cliente.EmpresaId = (await GetEmpresaIdFromUser()).GetValueOrDefault();
             await _clienteService.AddClienteAsync(cliente);
             return RedirectToAction(nameof(Index));
         }

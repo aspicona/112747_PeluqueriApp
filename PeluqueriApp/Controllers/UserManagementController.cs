@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 [Authorize(Roles = "Admin")]
 public class UserManagementController : Controller
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UserManagementController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+    public UserManagementController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -49,7 +49,7 @@ public class UserManagementController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
