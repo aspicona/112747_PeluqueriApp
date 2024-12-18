@@ -94,6 +94,13 @@ builder.Services.AddHttpClient<IMercadoPagoService, MercadoPagoService>((service
     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 });
 
+builder.Services.AddAuthentication()
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -106,10 +113,14 @@ if (!app.Environment.IsDevelopment())
 
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var services = scope.ServiceProvider;
+
+    // Asegúrate de registrar todos los servicios necesarios antes de esta llamada
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
     await CreateRolesAsync(roleManager);
-    //var services = scope.ServiceProvider;
-    //await SeedSuperAdminAsync(services);
+    await SeedSuperAdminAsync(services); // Crea el superadmin
 }
 
 app.UseHttpsRedirection();
@@ -150,9 +161,10 @@ async Task CreateRolesAsync(RoleManager<IdentityRole> roleManager)
 }
 async Task SeedSuperAdminAsync(IServiceProvider serviceProvider)
 {
-    var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    const string superAdminEmail = "superadmin@peluqueriapp.com";
+    const string superAdminEmail = "admin@peluqueriapp.com";
     const string superAdminPassword = "admin2024";
     const string superAdminRole = "SuperAdmin";
 
@@ -160,11 +172,12 @@ async Task SeedSuperAdminAsync(IServiceProvider serviceProvider)
     var superAdminUser = await userManager.FindByEmailAsync(superAdminEmail);
     if (superAdminUser == null)
     {
-        superAdminUser = new IdentityUser
+        superAdminUser = new ApplicationUser
         {
             UserName = superAdminEmail,
             Email = superAdminEmail,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            IdEmpresa= 1002
         };
         var result = await userManager.CreateAsync(superAdminUser, superAdminPassword);
         if (result.Succeeded)

@@ -35,6 +35,13 @@ namespace PeluqueriApp.Models
             // Importante: Llamar al base para conservar la configuración de Identity
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Cliente>().HasQueryFilter(c => c.Activo);
+            modelBuilder.Entity<Cita>().HasQueryFilter(c => c.Activo);
+            modelBuilder.Entity<Empresa>().HasQueryFilter(e => e.Activo);
+            modelBuilder.Entity<Insumo>().HasQueryFilter(i => i.Activo);
+            modelBuilder.Entity<Producto>().HasQueryFilter(p => p.Activo);
+            modelBuilder.Entity<Servicio>().HasQueryFilter(s => s.Activo);
+
             // Relación entre Citas y Empleados
             modelBuilder.Entity<Cita>()
                 .HasOne(c => c.Empleado)

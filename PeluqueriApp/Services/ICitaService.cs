@@ -15,7 +15,7 @@ namespace PeluqueriApp.Services
         Task<List<ServicioRealizadoViewModel>> ObtenerServiciosRealizadosAsync(DateTime startDate, DateTime endDate, int empresaId);
         Task ReservarSlotsAsync(DateTime fecha, int empleadoId, TimeSpan horarioInicio, int duracionMinutos, int citaId);
         Task CancelarReservasAsync(int citaId);
-        Task EnviarMensajeWhatsAppAsync(string numeroCliente);
+        Task EnviarMensajeWhatsAppAsync(string numeroCliente, CitaViewModel model);
     }
 
 }

@@ -34,8 +34,12 @@
                 <td>@empresa.Telefono</td>
                 <td>@empresa.Email</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@empresa.Id" class="btn btn-primary">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@empresa.Id" class="btn btn-danger">Eliminar</a>
+                    <a asp-action="Edit" asp-route-id="@empresa.Id" class="text-primary me-2" title="Editar">
+                        <i class="bi bi-pencil"></i> <!-- Ícono de lápiz -->
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@empresa.Id" class="text-danger" title="Eliminar">
+                        <i class="bi bi-trash"></i> <!-- Ícono de basura -->
+                    </a>
                 </td>
             </tr>
         }

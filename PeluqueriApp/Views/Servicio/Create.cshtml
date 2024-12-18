@@ -1,86 +1,164 @@
 ﻿@model ServicioViewModel
 
-<h2>Crear Servicio</h2>
+<h2 class="text-center mt-4">Crear Servicio</h2>
 
-<form asp-action="Create" asp-controller="Servicio" method="post">
-    @Html.AntiForgeryToken()
-    <div class="mb-3">
-        <label asp-for="Nombre" class="form-label"></label>
-        <input asp-for="Nombre" class="form-control" />
-        <span asp-validation-for="Nombre" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Descripcion" class="form-label">Descripción</label>
-        <textarea asp-for="Descripcion" class="form-control"></textarea>
-        <span asp-validation-for="Descripcion" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="PrecioBase" class="form-label"></label>
-        <input asp-for="PrecioBase" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="PrecioBase" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="DuracionEstimada" class="form-label"></label>
-        <input asp-for="DuracionEstimada" class="form-control" type="number" />
-        <span asp-validation-for="DuracionEstimada" class="text-danger"></span>
-    </div>
-
-    <!-- Botón para abrir el modal -->
-    <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#insumosModal">
-        Seleccionar Insumos
-    </button>
-    <br />
-
-
-    <!-- Modal para seleccionar insumos -->
-    <div class="modal fade" id="insumosModal" tabindex="-1" aria-labelledby="insumosModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="insumosModalLabel">Seleccionar Insumos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Create" asp-controller="Servicio" method="post">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label asp-for="Nombre" class="form-label"></label>
+                    <input asp-for="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        @for (var i = 0; i < Model.InsumosAsignados.Count; i++)
-                        {
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="form-check flex-grow-1">
-                                    <input type="checkbox" class="form-check-input"
-                                           name="InsumosAsignados[@i].Seleccionado"
-                                           id="insumo_@Model.InsumosAsignados[i].InsumoId"
-                                           value="true" />
-                                    <input type="hidden"
-                                           name="InsumosAsignados[@i].Seleccionado"
-                                           value="false" />
-                                    <label class="form-check-label"
-                                           for="insumo_@Model.InsumosAsignados[i].InsumoId">@Model.InsumosAsignados[i].NombreInsumo</label>
-                                </div>
-                                <input type="number" class="form-control ms-3"
-                                       name="InsumosAsignados[@i].CantidadNecesaria"
-                                       value="@Model.InsumosAsignados[i].CantidadNecesaria"
-                                       placeholder="Cantidad necesaria"
-                                       style="width: 100px;" />
-                                <input type="hidden"
-                                       name="InsumosAsignados[@i].InsumoId"
-                                       value="@Model.InsumosAsignados[i].InsumoId" />
-                                <input type="hidden"
-                                       name="InsumosAsignados[@i].NombreInsumo"
-                                       value="@Model.InsumosAsignados[i].NombreInsumo" />
+
+                <div class="mb-3">
+                    <label asp-for="Descripcion" class="form-label">Descripción</label>
+                    <textarea asp-for="Descripcion" class="form-control"></textarea>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <!-- Botón para abrir el modal -->
+                <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#insumosModal">
+                    Seleccionar Insumos
+                </button>
+                <br />
+                <div class="mb-3">
+                <label asp-for="CostoInsumos" class="form-label">Costo Total de Insumos</label>
+                <input asp-for="CostoInsumos" type="decimal" id="CostoInsumos" class="form-control" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DuracionEstimada" class="form-label"></label>
+                    <input asp-for="DuracionEstimada" class="form-control" type="number" />
+                    <span asp-validation-for="DuracionEstimada" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PrecioBase" class="form-label"></label>
+                    <input asp-for="PrecioBase" class="form-control" type="number" step="0.01" />
+                    <span asp-validation-for="PrecioBase" class="text-danger"></span>
+                </div>  
+
+                <!-- Modal para seleccionar insumos -->
+                <div class="modal fade" id="insumosModal" tabindex="-1" aria-labelledby="insumosModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="insumosModalLabel">Seleccionar Insumos</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                        }
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    @for (var i = 0; i < Model.InsumosAsignados.Count; i++)
+                                    {
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="form-check flex-grow-1">
+                                                <input type="checkbox" class="form-check-input"
+                                                       data-costo-unitario="@Model.InsumosAsignados[i].CostoUnitario"
+                                                       name="InsumosAsignados[@i].Seleccionado"
+                                                       id="insumo_@Model.InsumosAsignados[i].InsumoId"
+                                                       value="true" />
+                                                <input type="hidden"
+                                                       name="InsumosAsignados[@i].Seleccionado"
+                                                       value="false" />
+                                                <label class="form-check-label"
+                                                       for="insumo_@Model.InsumosAsignados[i].InsumoId">@Model.InsumosAsignados[i].NombreInsumo</label>
+                                            </div>
+                                            <input type="number" class="form-control ms-3"
+                                                   name="InsumosAsignados[@i].CantidadNecesaria"
+                                                   value="@Model.InsumosAsignados[i].CantidadNecesaria"
+                                                   placeholder="Cantidad necesaria"
+                                                   style="width: 100px;" />
+                                            <input type="hidden"
+                                                   name="InsumosAsignados[@i].InsumoId"
+                                                   value="@Model.InsumosAsignados[i].InsumoId" />
+                                            <input type="hidden"
+                                                   name="InsumosAsignados[@i].NombreInsumo"
+                                                   value="@Model.InsumosAsignados[i].NombreInsumo" />
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <br />
+                 <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <br/>
+                    <br/>
+                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-    <br />
-        <button type="submit" class="btn btn-primary">Guardar</button>
-</form>
+</div>
+<script>
+    function calcularCostoInsumos() {
+        console.log("Iniciando cálculo de costo de insumos...");
+
+        const checkboxes = document.querySelectorAll('.form-check-input:checked'); // Checkboxes seleccionados
+        let costoTotal = 0;
+
+        checkboxes.forEach(checkbox => {
+            console.log("Procesando checkbox:", checkbox);
+
+            // Encuentra el input de cantidad relacionado al checkbox
+            const cantidadInput = checkbox.closest('.d-flex').querySelector('input[name*=".CantidadNecesaria"]');
+            if (!cantidadInput) {
+                console.warn("No se encontró el input de cantidad para el checkbox:", checkbox);
+                return;
+            }
+
+            const cantidad = parseFloat(cantidadInput.value || 0); // Valor ingresado
+            const costoUnitario = parseFloat(checkbox.dataset.costoUnitario || 0); // Costo unitario del insumo
+
+            console.log(`Cantidad: ${cantidad}, Costo Unitario: ${costoUnitario}`);
+
+            // Solo acumula si la cantidad es válida
+            if (cantidad > 0) {
+                costoTotal += cantidad * costoUnitario;
+            }
+        });
+
+        console.log("Costo Total Calculado:", costoTotal);
+
+        // Actualiza el input readonly con el costo total
+        const costoInput = document.getElementById('CostoInsumos');
+        if (costoInput) {
+            costoInput.value = costoTotal.toFixed(2);
+            console.log("Costo total actualizado en el input:", costoInput.value);
+        } else {
+            console.error("No se encontró el input de costo total con id 'CostoInsumos'.");
+        }
+    }
+
+    // Configura los eventos al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.form-check-input');
+        const cantidadInputs = document.querySelectorAll('input[name*=".CantidadNecesaria"]');
+
+        // Eventos de entrada para recalcular el costo
+        checkboxes.forEach(checkbox => checkbox.addEventListener('input', calcularCostoInsumos));
+        cantidadInputs.forEach(input => input.addEventListener('input', calcularCostoInsumos));
+
+        // Recalcula al cerrar el modal
+        const insumosModal = document.getElementById('insumosModal');
+        if (insumosModal) {
+            insumosModal.addEventListener('hidden.bs.modal', calcularCostoInsumos);
+        } else {
+            console.error("No se encontró el modal con id 'insumosModal'.");
+        }
+    });
+</script>
+
+
+
+

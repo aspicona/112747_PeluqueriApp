@@ -45,10 +45,11 @@ public class EmpleadoService : IEmpleadoService
 
     public async Task DeleteEmpleadoAsync(int id)
     {
-        var empleado = await _context.Empleados.FindAsync(id);
+        var empleado = await GetEmpleadoByIdAsync(id);
         if (empleado != null)
         {
-            _context.Empleados.Remove(empleado);
+            empleado.Activo = false; // Marcar como inactivo
+            _context.Empleados.Update(empleado);
             await _context.SaveChangesAsync();
         }
     }

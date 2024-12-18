@@ -19,11 +19,15 @@
             <tr>
                 <td>@insumo.Nombre</td>
                 <td>@insumo.UnidadDeMedida.Nombre</td>
-                <td>AR$ @insumo.CostoUnitario.ToString("N2", new CultureInfo("es-AR"))</td>
-                <td>@insumo.StockDisponible</td>
+                <td class="text-end">AR$ @insumo.CostoUnitario.ToString("N2", new CultureInfo("es-AR"))</td>
+                <td class="text-end">@insumo.StockDisponible</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@insumo.Id" class="btn btn-primary">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@insumo.Id" class="btn btn-danger">Eliminar</a>
+                    <a asp-action="Edit" asp-route-id="@insumo.Id" class="text-primary me-2" title="Editar">
+                        <i class="bi bi-pencil"></i> <!-- Ícono de lápiz -->
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@insumo.Id" class="text-danger" title="Eliminar">
+                        <i class="bi bi-trash"></i> <!-- Ícono de basura -->
+                    </a>
                 </td>
             </tr>
         }

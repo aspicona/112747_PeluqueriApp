@@ -41,6 +41,7 @@ namespace PeluqueriApp.Services
                 }
             }
 
+            servicio.CostoInsumos = await CalcularCostoInsumosAsync(insumos);
             servicio.FechaUltModif = DateTime.Now;
             servicio.InsumosXservicio = insumos;
 
@@ -68,15 +69,13 @@ namespace PeluqueriApp.Services
 
             await _context.SaveChangesAsync();
         }
-
-
-
         public async Task DeleteServicioAsync(int id)
         {
             var servicio = await _context.Servicios.FindAsync(id);
             if (servicio != null)
             {
-                _context.Servicios.Remove(servicio);
+                servicio.Activo = false; // Marcar como inactivo
+                _context.Servicios.Update(servicio); // Actualizar el estado en la base de datos
                 await _context.SaveChangesAsync();
             }
         }
@@ -95,6 +94,32 @@ namespace PeluqueriApp.Services
                 PrecioBase = s.PrecioBase,
                 DuracionEstimada = s.DuracionEstimada
             }).ToList();
+        }
+        public async Task<int> CalcularDuracionTotalAsync(List<int> servicioIds)
+        {
+            var servicios = await _context.Servicios
+                .Where(s => servicioIds.Contains(s.Id))
+                .ToListAsync();
+
+            return servicios.Sum(s => s.DuracionEstimada);
+        }
+
+        public async Task<decimal> CalcularCostoInsumosAsync(List<InsumosXservicio> insumos)
+        {
+            var insumoIds = insumos.Select(i => i.IdInsumo).ToList();
+            var insumosDetalles = await _context.Insumos
+                .Where(i => insumoIds.Contains(i.Id))
+                .ToDictionaryAsync(i => i.Id, i => i.CostoUnitario);
+
+            decimal costoTotal = 0;
+            foreach (var insumo in insumos)
+            {
+                if (insumosDetalles.TryGetValue(insumo.IdInsumo, out var costoUnitario))
+                {
+                    costoTotal += insumo.CantidadNecesaria * costoUnitario;
+                }
+            }
+            return costoTotal;
         }
     }
 }

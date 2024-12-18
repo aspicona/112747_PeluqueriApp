@@ -60,7 +60,8 @@ namespace PeluqueriApp.Services
             var producto = await _context.Productos.FindAsync(id);
             if (producto != null)
             {
-                _context.Productos.Remove(producto);
+                producto.Activo = false; // Marcar como inactivo
+                _context.Productos.Update(producto); // Actualizar el estado en la base de datos
                 await _context.SaveChangesAsync();
             }
         }

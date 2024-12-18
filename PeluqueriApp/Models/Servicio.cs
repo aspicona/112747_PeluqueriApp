@@ -11,6 +11,8 @@ namespace PeluqueriApp.Models
         public decimal PrecioBase { get; set; }
         public int DuracionEstimada { get; set; }
         public DateTime FechaUltModif { get; set; }
+        public bool Activo { get; set; } = true;
+        public decimal CostoInsumos { get; set; }
 
         [ForeignKey("Empresa")]
         public int EmpresaId { get; set; }
@@ -28,6 +30,7 @@ namespace PeluqueriApp.Models
         public string Descripcion { get; set; }
         public decimal PrecioBase { get; set; }
         public int DuracionEstimada { get; set; }
+        public decimal CostoInsumos { get; set; }
         public List<InsumoAsignadoViewModel> InsumosAsignados { get; set; } = new List<InsumoAsignadoViewModel>();
     }
 
@@ -37,7 +40,8 @@ namespace PeluqueriApp.Models
         public string NombreInsumo { get; set; }
         public bool Seleccionado { get; set; }
         public decimal CantidadNecesaria { get; set; }
-        public string UnidadDeMedida { get; set; }
+        public string? UnidadDeMedida { get; set; }
+        public decimal CostoUnitario { get; set; }
     }
 
     public class ServicioRealizadoViewModel

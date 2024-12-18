@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PeluqueriApp.Models;
 using PeluqueriApp.Services;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Identity;
 
 public class CitaController : Controller
 {
@@ -79,23 +78,36 @@ public class CitaController : Controller
         ViewBag.EstadosCita = new SelectList(estadosCita, "Id", "Descripcion");
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? IdCliente, int? IdEmpleado)
     {
         // Obtén el Id de la empresa asociada al usuario actual
         var empresaId = (await GetEmpresaIdFromUser()).GetValueOrDefault();
 
         if (empresaId == 0)
         {
-            return Unauthorized(); 
+            return Unauthorized();
         }
 
         // Traer las citas de la empresa
         var citas = await _citaService.GetCitasByEmpresaIdAsync(empresaId);
 
+        // Aplicar filtros adicionales
+        if (IdCliente.HasValue)
+        {
+            citas = citas.Where(c => c.IdCliente == IdCliente.Value).ToList();
+        }
+
+        if (IdEmpleado.HasValue)
+        {
+            citas = citas.Where(c => c.IdEmpleado == IdEmpleado.Value).ToList();
+        }
+
+        // Configurar los datos para los selectores
         await SetViewBagsAsync();
 
         return View(citas);
     }
+
 
     public async Task<IActionResult> Create()
     {
@@ -116,10 +128,10 @@ public class CitaController : Controller
         }), "Id", "NombreCompleto");
 
         var servicios = await _servicioService.GetServiciosByEmpresaIdAsync(empresaId);
-        ViewBag.Servicios = servicios.Select(s => new
+        ViewBag.Servicios = servicios.Select(s => new SelectListItem
         {
-            Id = s.Id,
-            s.Nombre
+            Value = s.Id.ToString(),
+            Text = s.Nombre
         }).ToList();
 
         // Horarios disponibles
@@ -177,7 +189,7 @@ public class CitaController : Controller
                 IdEstadoCita = 1, // Pendiente por defecto
                 IdEmpresa = (await GetEmpresaIdFromUser()).GetValueOrDefault(),
                 PrecioEstimado = 0, // Calculado después
-                DuracionEstimada = 0 
+                DuracionEstimada = 0
             };
 
             // Calcular duración y precio estimados según los servicios seleccionados
@@ -195,19 +207,27 @@ public class CitaController : Controller
                 }
             }
 
-            // Calcular precio adicional según los productos seleccionados
-            foreach (var producto in model.ProductosSeleccionados.Where(p => p.Seleccionado))
+            if (model.ProductosSeleccionados != null)
             {
-                var productoInfo = await _productoService.GetProductoByIdAsync(producto.ProductoId);
-                if (productoInfo != null)
+                // Calcular precio adicional según los productos seleccionados
+                foreach (var producto in model.ProductosSeleccionados.Where(p => p.Seleccionado))
                 {
-                    cita.ProductosXCita.Add(new ProductosXcita
+                    var productoInfo = await _productoService.GetProductoByIdAsync(producto.ProductoId);
+                    if (productoInfo != null)
                     {
-                        IdProducto = producto.ProductoId,
-                        Cantidad = producto.Cantidad
-                    });
-                    cita.PrecioEstimado += productoInfo.Precio * producto.Cantidad; // Calcular precio por cantidad
+                        cita.ProductosXCita.Add(new ProductosXcita
+                        {
+                            IdProducto = producto.ProductoId,
+                            Cantidad = producto.Cantidad
+                        });
+                        cita.PrecioEstimado += productoInfo.Precio * producto.Cantidad; // Calcular precio por cantidad
+                    }
                 }
+            }
+            else
+            {
+                ModelState.AddModelError("", "No se seleccionaron productos.");
+                return View(model);
             }
 
             // Validar disponibilidad de slots según la duración estimada
@@ -224,7 +244,18 @@ public class CitaController : Controller
 
             // Reservar los slots correspondientes
             await _citaService.ReservarSlotsAsync(model.Fecha, model.IdEmpleado, horarioSeleccionado, cita.DuracionEstimada, cita.Id);
-            await _citaService.EnviarMensajeWhatsAppAsync("543513444885");
+            TempData["SwalMessage"] = "Cita creada correctamente!";
+            TempData["SwalType"] = "success";
+            try
+            {
+                await _citaService.EnviarMensajeWhatsAppAsync("543513444885", model);
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "No se pudo enviar confirmación por WhatsApp.";
+
+                return RedirectToAction(nameof(Index));
+            }
             return RedirectToAction(nameof(Index));
         }
 
@@ -233,6 +264,8 @@ public class CitaController : Controller
     }
     public async Task<IActionResult> Edit(int id)
     {
+        await SetViewBagsAsync();
+
         var cita = await _citaService.GetCitaByIdAsync(id);
         if (cita == null)
         {
@@ -241,7 +274,7 @@ public class CitaController : Controller
 
         // Configurar ViewBag.Servicios
         var servicios = await _servicioService.GetAllServiciosAsync();
-        ViewBag.Servicios = new SelectList(await _servicioService.GetServiciosByEmpresaIdAsync(cita.IdEmpresa),"Id","Nombre");
+        ViewBag.Servicios = new SelectList(await _servicioService.GetServiciosByEmpresaIdAsync(cita.IdEmpresa), "Id", "Nombre");
 
         // Otros datos
         ViewBag.ClienteNombre = $"{cita.Cliente.Nombre} {cita.Cliente.Apellido}";
@@ -260,8 +293,8 @@ public class CitaController : Controller
             .Where(s => s.Seleccionado)
             .Select(s => s.Id)
             .ToList(),
-        ProductosSeleccionados = await _productoService.GetProductosByCitaIdAsync(cita.Id),
-        ProductosDisponibles = await _productoService.GetProductosByEmpresaIdAsync(cita.IdEmpresa)
+            ProductosSeleccionados = await _productoService.GetProductosByCitaIdAsync(cita.Id),
+            ProductosDisponibles = await _productoService.GetProductosByEmpresaIdAsync(cita.IdEmpresa)
         };
 
         return View(model);
@@ -299,7 +332,7 @@ public class CitaController : Controller
             // Actualizar solo los campos editables
             cita.Fecha = model.Fecha.Add(horarioSeleccionado);
             cita.PrecioFinal = model.PrecioFinal;
-            cita.IdEstadoCita= model.IdEstadoCita;
+            cita.IdEstadoCita = model.IdEstadoCita;
             // Recalcular duración y precio
             cita.DuracionEstimada = 0;
             cita.PrecioEstimado = 0;
@@ -367,9 +400,22 @@ public class CitaController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> Delete(Cita cita)
     {
-        await _citaService.DeleteCitaAsync(id);
+        await _citaService.DeleteCitaAsync(cita.Id);
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAvailableSlots(int empleadoId, DateTime fecha, string servicios)
+    {
+        var servicioIds = servicios?.Split(',').Select(int.Parse).ToList() ?? new List<int>();
+
+        var duracionTotal = await _servicioService.CalcularDuracionTotalAsync(servicioIds);
+
+        var slotsDisponibles = await _citaService.GetAvailableSlotsAsync(fecha, empleadoId, duracionTotal);
+
+        return Json(slotsDisponibles);
+    }
+
 }

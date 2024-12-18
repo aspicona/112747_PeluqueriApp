@@ -19,11 +19,15 @@
             <tr>
                 <td>@servicio.Nombre</td>
                 <td>@servicio.Descripcion</td>
-                <td>AR$ @servicio.PrecioBase.ToString("N2", new CultureInfo("es-AR"))</td>
-                <td>@servicio.DuracionEstimada minutos</td>
+                <td class="text-end">AR$ @servicio.PrecioBase.ToString("N2", new CultureInfo("es-AR"))</td>
+                <td class="text-end">@servicio.DuracionEstimada minutos</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@servicio.Id" class="btn btn-primary">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@servicio.Id" class="btn btn-danger">Eliminar</a>
+                    <a asp-action="Edit" asp-route-id="@servicio.Id" class="text-primary me-2" title="Editar">
+    <i class="bi bi-pencil"></i>
+</a>
+<a asp-action="Delete" asp-route-id="@servicio.Id" class="text-danger" title="Eliminar">
+    <i class="bi bi-trash"></i>
+</a>
                 </td>
             </tr>
         }

@@ -12,6 +12,7 @@ namespace PeluqueriApp.Models
         public string Domicilio { get; set; }
         public string Telefono { get; set; }
         public string Email { get; set; }
+        public bool Activo { get; set; } = true;
 
         [ValidateNever]
         public DateTime FechaCreacion { get; set; } = DateTime.Now;

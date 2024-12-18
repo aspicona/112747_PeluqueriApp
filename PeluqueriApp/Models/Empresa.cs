@@ -12,6 +12,7 @@ namespace PeluqueriApp.Models
         public string Telefono { get; set; }
         public string Email { get; set; }
         public string? ConfigAdicionales { get; set; }
+        public bool Activo { get; set; } = true;
 
         [ValidateNever]
         public ICollection<Producto> Productos { get; set; }

@@ -19,6 +19,7 @@ namespace PeluqueriApp.Models
 
         public decimal CostoUnitario { get; set; }
         public int StockDisponible { get; set; }
+        public bool Activo { get; set; } = true;
 
         [ForeignKey("Empresa")]
         public int EmpresaId { get; set; }

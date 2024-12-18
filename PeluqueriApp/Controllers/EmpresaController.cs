@@ -6,7 +6,7 @@ using PeluqueriApp.Services;
 
 using System.Threading.Tasks;
 
-
+[Authorize(Roles = "SuperAdmin")]
 public class EmpresaController : Controller
 {
     private readonly IEmpresaService _empresaService;

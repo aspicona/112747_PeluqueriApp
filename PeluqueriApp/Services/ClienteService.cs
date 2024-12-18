@@ -15,22 +15,23 @@ namespace PeluqueriApp.Services
         public async Task<IEnumerable<Cliente>> GetAllClientesAsync()
         {
             return await _context.Clientes
-                                 .Include(c => c.Empresa) // Para incluir la relación con Empresa
-                                 .ToListAsync();
+                .Include(c => c.Empresa) // Para incluir la relación con Empresa
+                .Where(c => c.Activo) // Filtrar solo los clientes activos
+                .ToListAsync();
         }
 
         public async Task<Cliente> GetClienteByIdAsync(int id)
         {
             return await _context.Clientes
-                                 .Include(c => c.Empresa) // Para incluir la relación con Empresa
-                                 .FirstOrDefaultAsync(c => c.Id == id);
+                .Include(c => c.Empresa) // Para incluir la relación con Empresa
+                .FirstOrDefaultAsync(c => c.Id == id && c.Activo); // Filtrar solo el cliente activo
         }
 
         public async Task<List<Cliente>> GetClientesByEmpresaIdAsync(int empresaId)
         {
             return await _context.Clientes
                 .Include(c => c.Empresa)
-                .Where(c => c.EmpresaId == empresaId)
+                .Where(c => c.EmpresaId == empresaId && c.Activo) // Filtrar solo los clientes activos de la empresa
                 .ToListAsync();
         }
 
@@ -51,7 +52,8 @@ namespace PeluqueriApp.Services
             var cliente = await GetClienteByIdAsync(id);
             if (cliente != null)
             {
-                _context.Clientes.Remove(cliente);
+                cliente.Activo = false; // Marcar como inactivo
+                _context.Clientes.Update(cliente);
                 await _context.SaveChangesAsync();
             }
         }

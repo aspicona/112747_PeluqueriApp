@@ -19,6 +19,7 @@ namespace PeluqueriApp.Models
         public string Domicilio { get; set; }
 
         public string Telefono { get; set; }
+        public bool Activo { get; set; } = true;
 
         [EmailAddress]
         public string Email { get; set; }

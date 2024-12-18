@@ -1,114 +1,345 @@
 ﻿@model CitaViewModel
 
+<h2>Registrar Cita</h2>
+
 <form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Columna izquierda -->
+            <div class="col-md-6">
+                <!-- Cliente -->
+                <div class="mb-3">
+                    <label for="Cliente">Cliente</label>
+                    @Html.DropDownListFor(m => m.IdCliente, ViewBag.Clientes as SelectList, "Seleccione un cliente", new { @class = "form-select" })
+                </div>
 
-    <div class="mb-3">
-        <label for="Cliente">Cliente</label>
-        @Html.DropDownListFor(m => m.IdCliente, ViewBag.Clientes as SelectList, "Seleccione un cliente", new { @class = "form-select" })
-    </div>
+                <!-- Empleado -->
+                <div class="mb-3">
+                    <label for="Empleado">Empleado</label>
+                    @Html.DropDownListFor(m => m.IdEmpleado, ViewBag.Empleados as SelectList, "Seleccione un empleado", new { @class = "form-select" })
+                </div>
 
-    <div class="mb-3">
-    <label for="Empleado">Empleado</label>
-    @Html.DropDownListFor(m => m.IdEmpleado, ViewBag.Empleados as SelectList, "Seleccione un empleado", new { @class = "form-select" })
-</div>
+                <!-- Fecha -->
+                <div class="mb-3">
+                    <label for="Fecha">Fecha</label>
+                    <input type="date" asp-for="Fecha" id="Fecha" class="form-control" />
+                </div>
 
-<div class="mb-3">
-    <label for="Fecha">Fecha</label>
-    <input type="date" asp-for="Fecha" class="form-control" />
-</div>
+                <!-- Selector de Servicios -->
+                <div class="mb-3">
+                    <label>Servicios</label>
+                    <br />
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#serviciosModal">
+                        Seleccionar Servicios
+                    </button>
+                    <input type="hidden" asp-for="ServiciosSeleccionados" id="ServiciosSeleccionados" />
+                </div>
+                <div class="mb-3">
+                    <label>Servicios Seleccionados</label>
+                    <input type="text" id="ServiciosSeleccionadosResumen" class="form-control" readonly />
+                </div>
 
-<div class="mb-3">
-    <label for="Horario">Horario</label>
-    <select asp-for="HorarioSeleccionado" class="form-select">
-        @foreach (var horario in ViewBag.HorariosDisponibles as List<string>)
-        {
-            <option value="@horario">@horario</option>
-        }
-    </select>
-</div>
-
-
-    <div class="mb-3">
-        <label>Servicios</label>
-        @foreach (var servicio in ViewBag.Servicios as IEnumerable<dynamic>)
-        {
-            <div>
-                <input type="checkbox" name="ServiciosSeleccionados" value="@servicio.Id" />
-                @servicio.Nombre
+                <!-- Selector de Productos -->
+                <div class="mb-3">
+                    <label>Productos</label>
+                     <br />
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#productosModal">
+                        Seleccionar Productos
+                    </button>
+                    <input type="hidden" id="ProductosSeleccionadosData" name="ProductosSeleccionados" />
+                </div>
+                <div class="mb-3">
+                    <label>Productos Seleccionados</label>
+                    <input type="text" id="ProductosSeleccionadosResumen" class="form-control" readonly />
+                </div>
             </div>
-        }
+
+            <!-- Columna derecha: Calendario -->
+            <div class="col-md-6">
+                <div id="calendar" style="height: 500px;"></div>
+            </div>
+        </div>
+
+        <!-- Horario -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <label for="Horario">Horario</label>
+                <select asp-for="HorarioSeleccionado" class="form-select"></select>
+            </div>
+        </div>
+
+        <!-- Botón de Enviar -->
+        <div class="text-end">
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">Crear Cita</button>
+                    <br/>
+                    <br/>
+                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+        </div>
     </div>
 
-    <!-- Botón para abrir el modal de productos -->
-    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#productosModal">
-        Seleccionar Productos
-    </button>
-    
-    <!-- Modal de productos -->
-    <div class="modal fade" id="productosModal" tabindex="-1" aria-labelledby="productosModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="productosModalLabel">Seleccionar Productos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    @for (var i = 0; i < Model.ProductosDisponibles.Count; i++)
-                    {
-                        <div class="d-flex align-items-center mb-3">
-                            <!-- Checkbox para seleccionar un producto -->
-                            <input type="checkbox" name="ProductosSeleccionados[@i].Seleccionado"
-                                   id="ProductoSeleccionado_@i"
-                                   value="true"
-                                   class="form-check-input" />
-                            <input type="hidden" name="ProductosSeleccionados[@i].Seleccionado" value="false" />
-
-                            <!-- Nombre del producto -->
-                            <label for="ProductoSeleccionado_@i" class="ms-2">@Model.ProductosDisponibles[i].NombreProducto</label>
-
-                            <!-- Cantidad -->
-                            <input type="number" name="ProductosSeleccionados[@i].Cantidad"
-                                   value="@Model.ProductosDisponibles[i].Cantidad"
-                                   placeholder="Cantidad"
-                                   class="form-control ms-3" style="width: 100px;" />
-
-                            <!-- ID del producto -->
-                            <input type="hidden" name="ProductosSeleccionados[@i].ProductoId"
-                                   value="@Model.ProductosDisponibles[i].ProductoId" />
-
-                            <!-- Nombre del producto -->
-                            <input type="hidden" name="ProductosSeleccionados[@i].NombreProducto"
-                                   value="@Model.ProductosDisponibles[i].NombreProducto" />
-                        </div>
-                    }
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
+    <!-- Modal de Servicios -->
+    <div class="modal fade" id="serviciosModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Seleccionar Servicios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @foreach (var servicio in ViewBag.Servicios as IEnumerable<SelectListItem>)
+                {
+                    <div class="form-check">
+                        <!-- Checkbox con atributos personalizados para almacenar id y nombre -->
+                        <input type="checkbox" 
+                               class="form-check-input serviciosCheck" 
+                               data-id="@servicio.Value" 
+                               data-nombre="@servicio.Text" />
+                        <label>@servicio.Text</label>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="guardarServicios()">Guardar</button>
             </div>
         </div>
     </div>
-    <br />
-    <button type="submit" class="btn btn-primary mt-3">Crear Cita</button>
+</div>
+
+
+    <!-- Modal de Productos -->
+    <div class="modal fade" id="productosModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Seleccionar Productos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @for (var i = 0; i < Model.ProductosDisponibles.Count; i++)
+                {
+                    <div class="d-flex align-items-center mb-3">
+                        <!-- Checkbox -->
+                        <input type="checkbox" class="form-check-input productosCheck"
+                               data-id="@Model.ProductosDisponibles[i].ProductoId"
+                               data-nombre="@Model.ProductosDisponibles[i].NombreProducto"
+                               id="Producto_@i" />
+                        <label class="ms-2" for="Producto_@i">@Model.ProductosDisponibles[i].NombreProducto</label>
+
+                        <!-- Campo de cantidad -->
+                        <input type="number" class="form-control ms-3 productoCantidad"
+                               style="width: 100px;" placeholder="Cantidad" min="0" value="0" />
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="guardarProductos()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
 </form>
-<script>
-    document.getElementById("IdEmpleado").addEventListener("change", function () {
-        const empleadoId = this.value;
-        const fecha = document.getElementById("Fecha").value;
+<script> 
+    function guardarServicios() {
+        const idsSeleccionados = [];
+        const nombresSeleccionados = [];
 
-        fetch(`/Cita/GetAvailableSlots?empleadoId=${empleadoId}&fecha=${fecha}`)
-            .then(response => response.json())
-            .then(data => {
-                const horarioSelect = document.getElementById("HorarioSeleccionado");
-                horarioSelect.innerHTML = ""; // Limpiar horarios actuales
+        // Recorrer los checkboxes seleccionados
+        document.querySelectorAll(".serviciosCheck:checked").forEach(el => {
+            idsSeleccionados.push(el.getAttribute("data-id"));       // Guardar el ID del servicio
+            nombresSeleccionados.push(el.getAttribute("data-nombre")); // Guardar el nombre del servicio
+        });
 
-                data.forEach(horario => {
-                    const option = document.createElement("option");
-                    option.value = horario;
-                    option.textContent = horario;
-                    horarioSelect.appendChild(option);
-                });
+        // Actualizar el campo oculto con los IDs seleccionados
+        document.getElementById("ServiciosSeleccionados").value = idsSeleccionados.join(",");
+
+        // Actualizar el campo visible con los nombres seleccionados
+        document.getElementById("ServiciosSeleccionadosResumen").value = nombresSeleccionados.length > 0 
+            ? nombresSeleccionados.join(", ") 
+            : "Ninguno";
+
+        // Cerrar el modal
+        bootstrap.Modal.getInstance(document.getElementById('serviciosModal')).hide();
+    }
+
+    function guardarProductos() {
+        const productosSeleccionados = [];
+
+        // Recorrer los checkboxes seleccionados
+        document.querySelectorAll(".productosCheck:checked").forEach((el, index) => {
+            const id = el.getAttribute("data-id"); // ID del producto
+            const nombre = el.getAttribute("data-nombre"); // Nombre del producto
+            const cantidad = document.querySelectorAll(".productoCantidad")[index].value || 1; // Cantidad
+
+            // Construir el objeto producto
+            productosSeleccionados.push({
+                ProductoId: id,
+                NombreProducto: nombre,
+                Cantidad: cantidad
             });
+        });
+
+        // Actualizar el campo oculto con la lista JSON
+        document.getElementById("ProductosSeleccionadosData").value = JSON.stringify(productosSeleccionados);
+
+        // Mostrar los nombres seleccionados en el campo visible
+        const nombresResumen = productosSeleccionados.map(p => `${p.NombreProducto} (x${p.Cantidad})`).join(", ");
+        document.getElementById("ProductosSeleccionadosResumen").value = nombresResumen || "Ninguno";
+
+        // Cerrar el modal
+        bootstrap.Modal.getInstance(document.getElementById('productosModal')).hide();
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek', // Vista inicial (puede ser 'timeGridDay', 'timeGridWeek', o 'dayGridMonth')
+            headerToolbar: {
+                left: 'prev,next today', // Navegación
+                center: 'title',        // Título
+                right: 'dayGridMonth,timeGridWeek,timeGridDay' // Vistas disponibles
+            },
+            locale: 'es', // Idioma
+            slotMinTime: '09:00:00', // Hora de inicio del día
+            slotMaxTime: '18:00:00', // Hora de fin del día
+            timeZone: 'local',
+            events: [
+            ]
+        });
+
+        calendar.render();
     });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        // Crear el calendario
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridDay',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay',
+            },
+            locale: 'es',
+            slotMinTime: '09:00:00',
+            slotMaxTime: '18:00:00',
+            timeZone: 'local', 
+            selectable: true, // Habilitar selección de rango
+            editable: false, // Evitar edición directa
+            events: [], // Inicialmente vacío
+            eventClick: function (info) {
+                // Capturar clic en los eventos verdes ("Disponible")
+                const horarioInicio = info.event.start.toISOString().split("T")[1].substring(0, 5); // HH:mm
+                const horarioFin = info.event.end.toISOString().split("T")[1].substring(0, 5); // HH:mm
+
+                // Asignar el horario al campo de selección
+                document.getElementById("HorarioSeleccionado").innerHTML = `
+                    <option value="${horarioInicio}" selected>
+                        ${horarioInicio}
+                    </option>`;
+                //alert(`Has seleccionado: ${horarioInicio}`);
+            },
+            select: function (info) {
+                // Si quieres habilitar selección manual de rango (opcional)
+                alert(`Seleccionaste manualmente: ${info.startStr} - ${info.endStr}`);
+            },
+        });
+
+        calendar.render();
+    });
+
+    // Detectar cambios en el formulario y actualizar los eventos
+    document.getElementById("Fecha").addEventListener("change", fetchHorarios);
+    document.getElementById("IdEmpleado").addEventListener("change", fetchHorarios);
+    document.querySelectorAll("input[name='ServiciosSeleccionados']").forEach(input =>
+        input.addEventListener("change", fetchHorarios)
+    );
+
+    async function fetchHorarios() {
+        const empleadoId = document.getElementById("IdEmpleado").value;
+        const fecha = document.getElementById("Fecha").value;
+        const serviciosSeleccionados = Array.from(document.querySelectorAll("input[name='ServiciosSeleccionados']:checked"))
+            .map(input => input.value);
+
+        if (empleadoId && fecha) {
+            try {
+                const response = await fetch(`/Cita/GetAvailableSlots?empleadoId=${empleadoId}&fecha=${fecha}&servicios=${serviciosSeleccionados.join(",")}`);
+                if (!response.ok) {
+                    throw new Error("Error al obtener los slots disponibles");
+                }
+                const slots = await response.json();
+
+                // Si ya existe un calendario, destrúyelo antes de recrearlo
+                if (calendar) {
+                    calendar.destroy();
+                }
+
+                const calendarEl = document.getElementById("calendar");
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: "timeGridDay",
+                    timeZone: "local",
+                    slotMinTime: "09:00:00",
+                    slotMaxTime: "18:00:00",
+                    selectable: true,
+                    headerToolbar: {
+                        left: "prev,next today",
+                        center: "title",
+                        right: "timeGridDay,timeGridWeek",
+                    },
+                    events: slots.map(slot => {
+                        // Convierte el slot (HH:mm) en una fecha completa con la fecha seleccionada
+                        const startTime = new Date(`${fecha}T${slot}:00`);
+                        const endTime = new Date(startTime); // Clonar la fecha para calcular el fin
+                        endTime.setMinutes(endTime.getMinutes() + 30); // Suma la duración (30 minutos)
+
+                        return {
+                            start: startTime.toISOString(),
+                            end: endTime.toISOString(),
+                            title: "Disponible",
+                            backgroundColor: "#28a745", // Verde para disponible
+                            borderColor: "#28a745",
+                            textColor: "#fff",
+                        };
+                    }),
+
+                    eventClick: function (info) {
+                        const horarioInicio = info.event.start.toTimeString().split(" ")[0].substring(0, 5);
+                        const horarioFin = info.event.end.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+                        document.getElementById("HorarioSeleccionado").innerHTML = `
+                            <option value="${horarioInicio}" selected>
+                                ${horarioInicio}
+                            </option>`;
+                        //alert(`Has seleccionado: ${horarioInicio}`);
+                    },
+                    locale: "es",
+                });
+
+                calendar.render();
+                calendar.gotoDate(fecha); // Cambiar el calendario a la fecha seleccionada
+            } catch (error) {
+                console.error(error);
+                alert("Ocurrió un error al cargar los slots disponibles.");
+            }
+        }
+    }
+
+    function calculateEndTime(startTime, duration) {
+    const [hours, minutes] = startTime.split(":").map(Number);
+    const end = new Date(); // Crear un nuevo objeto de fecha
+    end.setHours(hours); // Establecer la hora
+    end.setMinutes(minutes + duration); // Sumar la duración
+    return end.toTimeString().substring(0, 5); // Retorna en formato HH:mm
+}
+</script>
+
+
+
+

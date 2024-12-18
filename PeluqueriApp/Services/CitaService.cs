@@ -74,7 +74,8 @@ namespace PeluqueriApp.Services
             var cita = await _context.Citas.FindAsync(id);
             if (cita != null)
             {
-                _context.Citas.Remove(cita);
+                cita.Activo = false; // Marcar como inactiva
+                _context.Citas.Update(cita); // Actualizar la cita en la base de datos
                 await _context.SaveChangesAsync();
             }
         }
@@ -90,34 +91,38 @@ namespace PeluqueriApp.Services
                     Ingreso = g.Sum(c => c.PrecioFinal)
                 }).ToListAsync();
         }
-        public async Task<List<string>> GetAvailableSlotsAsync(DateTime fecha, int empleadoId, int duracionMinutos)
+        public async Task<List<string>> GetAvailableSlotsAsync(DateTime fecha, int empleadoId, int duracionTotal)
         {
-            // Obtener los slots ya reservados para este empleado en la fecha especificada
             var slotsReservados = await _context.SlotsReservados
                 .Where(s => s.Fecha.Date == fecha.Date && s.IdEmpleado == empleadoId)
                 .Select(s => new { s.HoraInicio, s.HoraFin })
                 .ToListAsync();
 
-            // Crear una lista de todos los slots posibles (30 minutos de duración) en el día
             var slotsDisponibles = new List<string>();
-            var horaInicioDia = TimeSpan.FromHours(9);  // Asumimos que el día comienza a las 9:00 a.m.
-            var horaFinDia = TimeSpan.FromHours(18);   // Asumimos que el día termina a las 6:00 p.m.
+            var horaInicioDia = TimeSpan.FromHours(9);
+            var horaFinDia = TimeSpan.FromHours(18);
+            var duracionSlot = TimeSpan.FromMinutes(30);
 
-            for (var slot = horaInicioDia; slot < horaFinDia; slot += TimeSpan.FromMinutes(30))
-            {
-                var horarioFinSlot = slot + TimeSpan.FromMinutes(duracionMinutos);
+                    for (var slot = horaInicioDia; slot < horaFinDia; slot += duracionSlot)
+                    {
+                        var horarioFin = slot + TimeSpan.FromMinutes(duracionTotal);
 
-                // Verificar si el slot no está reservado
-                if (!slotsReservados.Any(r =>
-                    (slot >= r.HoraInicio && slot < r.HoraFin) ||
-                    (horarioFinSlot > r.HoraInicio && horarioFinSlot <= r.HoraFin)))
-                {
-                    slotsDisponibles.Add(slot.ToString(@"hh\:mm"));
-                }
-            }
+                        // Si el bloque excede el horario permitido, detén el bucle
+                        if (horarioFin > horaFinDia)
+                            break;
 
-            return slotsDisponibles;
+                        // Verificar si el bloque está disponible
+                        if (!slotsReservados.Any(r =>
+                            (slot >= r.HoraInicio && slot < r.HoraFin) ||             // Inicio dentro del rango reservado
+                            (horarioFin > r.HoraInicio && horarioFin <= r.HoraFin) || // Fin dentro del rango reservado
+                            (slot < r.HoraInicio && horarioFin > r.HoraFin)))         // El bloque abarca completamente un rango reservado
+                        {
+                            slotsDisponibles.Add(slot.ToString(@"hh\:mm"));
+                        }
+                    }
+                    return slotsDisponibles;
         }
+
         public async Task ReservarSlotsAsync(DateTime fecha, int empleadoId, TimeSpan horarioInicio, int duracionMinutos, int citaId)
         {
             var horarioFin = horarioInicio + TimeSpan.FromMinutes(duracionMinutos);
@@ -125,19 +130,34 @@ namespace PeluqueriApp.Services
 
             for (var slot = horarioInicio; slot < horarioFin; slot += TimeSpan.FromMinutes(30))
             {
+                // Reservar el slot completo
                 slotsReservados.Add(new SlotReservado
                 {
                     Fecha = fecha,
                     IdEmpleado = empleadoId,
                     HoraInicio = slot,
-                    HoraFin = slot + TimeSpan.FromMinutes(30),
-                    IdCita = citaId // Relacionado siempre con una cita
+                    HoraFin = slot + TimeSpan.FromMinutes(30), // Fin del slot
+                    IdCita = citaId
+                });
+            }
+
+            // Si el tiempo total no coincide exactamente con los slots de 30 minutos, añadir el último slot
+            if (horarioFin > slotsReservados.Last().HoraFin)
+            {
+                slotsReservados.Add(new SlotReservado
+                {
+                    Fecha = fecha,
+                    IdEmpleado = empleadoId,
+                    HoraInicio = slotsReservados.Last().HoraFin, // El inicio del siguiente slot
+                    HoraFin = slotsReservados.Last().HoraFin + TimeSpan.FromMinutes(30),
+                    IdCita = citaId
                 });
             }
 
             await _context.SlotsReservados.AddRangeAsync(slotsReservados);
             await _context.SaveChangesAsync();
         }
+
         public async Task CancelarReservasAsync(int citaId)
         {
             var slotsReservados = await _context.SlotsReservados
@@ -150,10 +170,10 @@ namespace PeluqueriApp.Services
                 await _context.SaveChangesAsync();
             }
         }
-        public async Task EnviarMensajeWhatsAppAsync(string numeroCliente)
+        public async Task EnviarMensajeWhatsAppAsync(string numeroCliente, CitaViewModel model)
         {
             // Token de acceso a la API de WhatsApp
-            string token = "EAARomsxog1EBO9msJlbUUKdSdPQnZCDt7w0X0BrOIsKeUBt2mnANXXjDAeptZAmjVU0WZC77ymebX3Lw8RAWiEoUJjti1uThmmmrwZBLiSWBCxfgYPHGENhTDJz3U6ZBWPRSKlpI0GhYalfPVdAubFbohpZAZAPmdIgVKuSmmX8oLctMJHzPI1tIJJYiIt4VcrkvMnTmlXNsFBNBlc2yLu6WlkO4GMZD";
+            string token = "EAARomsxog1EBOzdlG7Ng0vgVtMEN4cejfA3tPRN0TWS6Eo6aWfqaUudUBdfHhZBiwkk3pjdypXsJXRw64ecFq1fXOBWWZCmV99zEOAtkjZAHiJtKguStvozV9KrgxOxfIcbUaopZCUeWeGBX53RmMEAMxyZBL5c6XFLpjZCjohHNeZA21Dk4BGOGA6XtXJ5YRZAe57Knx3VaZAgXPyhHSWnUR8XPtZBT4ZD";
 
             // Identificador del número de teléfono registrado en WhatsApp Business
             string idTelefono = "443491182189871";
@@ -161,15 +181,38 @@ namespace PeluqueriApp.Services
             // URL para la solicitud
             string url = $"https://graph.facebook.com/v15.0/{idTelefono}/messages";
 
+            Cliente cliente= await _context.Clientes
+                .Include(c => c.Empresa)
+                .FirstOrDefaultAsync(c => c.Id == model.IdCliente && c.Activo);
+
+            List<string> nombresServicios = await _context.Servicios
+                .Where(s => model.ServiciosSeleccionados.Contains(s.Id))
+                .Select(s => s.Nombre)
+                .ToListAsync();
+
+            string listaServicios = string.Join(", ", nombresServicios);
+
             // Cuerpo del mensaje de WhatsApp
-            string mensajeJson = $@"
+            var mensajeJson = $@"
             {{
                 ""messaging_product"": ""whatsapp"",
                 ""to"": ""{numeroCliente}"",
                 ""type"": ""template"",
                 ""template"": {{
-                    ""name"": ""hello_world"",
-                    ""language"": {{ ""code"": ""en_US"" }}
+                    ""name"": ""reserva_de_cita"",
+                    ""language"": {{ ""code"": ""es"" }},
+                    ""components"": [
+                        {{
+                            ""type"": ""body"",
+                            ""parameters"": [
+                                {{ ""type"": ""text"", ""text"": ""{cliente.Nombre}"" }},
+                                {{ ""type"": ""text"", ""text"": ""{model.Fecha:dd/MM/yyyy}"" }},
+                                {{ ""type"": ""text"", ""text"": ""{model.HorarioSeleccionado}"" }},
+                                {{ ""type"": ""text"", ""text"": ""{listaServicios}"" }},
+                                {{ ""type"": ""text"", ""text"": ""{cliente.Empresa.Direccion}"" }}
+                            ]
+                        }}
+                    ]
                 }}
             }}";
 

@@ -11,6 +11,7 @@ namespace PeluqueriApp.Services
         Task UpdateServicioAsync(Servicio servicio, List<InsumosXservicio> insumos);
         Task DeleteServicioAsync(int id);
         Task<List<ServicioViewModel>> GetServiciosByCitaIdAsync(int citaId);
+        Task<int> CalcularDuracionTotalAsync(List<int> servicioIds);
     }
 
 }

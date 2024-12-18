@@ -1,37 +1,86 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
 }
+<style>
+    @{
+        var colorPrincipal = ViewBag.ColorPrincipal ?? "#ff0202";
+    }
 
-<div class="container mt-5">
-    <div class="text-center">
-        <h1 class="display-4 fw-bold">Bienvenido a PeluqueriApp</h1>
-        <p class="lead text-muted">La solución integral para la gestión de tu peluquería</p>
+    .tarjeta-larga {
+    height: 200px;
+    width: 90%;
+    margin: 20px auto;
+    background: linear-gradient(135deg, @colorPrincipal, #3A3A3A); /* Degradado en tonos del color principal */
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    color: white;
+}
+
+    .tarjeta-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 20px; /* Espacio entre las tarjetas */
+    }
+
+    .tarjeta-container > div {
+        flex: 1 1 calc(33.333% - 20px); /* Las tarjetas se ajustan al 33% */
+        max-width: calc(33.333% - 20px);
+    }
+
+    .tarjeta-larga:hover {
+        transform: translateY(-10px); /* Desplaza la tarjeta hacia arriba */
+        box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2); /* Aumenta la sombra */
+    }
+
+</style>
+
+<div class="container-fluid mt-0 p-0" style="background-image: url('/images/Fondo-blanco.jpeg'); background-size: cover; min-height: 100vh;">
+    <div class="text-center py-4" style="background-color: rgba(255, 255, 255, 0.8);">
+        <h3 class="display-4 fw-bold" style="color: @colorPrincipal;">Bienvenido a PeluqueriApp</h3>
+        <h4><b>La solución integral para la gestión de tu peluquería</b></h4>
     </div>
 
-    <div class="row mt-5">
-        <!-- Sección de características -->
-        <div class="col-lg-4 text-center">
-            @*<img src="~/images/appointments.svg" alt="Icono de citas" class="mb-3" style="width: 80px;">*@
-            <h3 class="fw-bold">Gestión de Citas</h3>
-            <p class="text-muted">Organiza y programa citas de forma rápida y sencilla, brindando una mejor experiencia a tus clientes.</p>
-        </div>
-        <div class="col-lg-4 text-center">
-            @*<img src="~/images/inventory.svg" alt="Icono de inventario" class="mb-3" style="width: 80px;">*@
-            <h3 class="fw-bold">Control de Inventario</h3>
-            <p class="text-muted">Lleva un seguimiento de todos los insumos y productos de tu peluquería, asegurando que siempre tengas lo necesario.</p>
-        </div>
-        <div class="col-lg-4 text-center">
-            @*<img src="~/images/reports.svg" alt="Icono de reportes" class="mb-3" style="width: 80px;">*@
-            <h3 class="fw-bold">Reportes y Análisis</h3>
-            <p class="text-muted">Obtén informes detallados de ingresos y rendimiento para tomar decisiones informadas.</p>
+    <div class="row justify-content-center mt-4 tarjeta-container" style="margin-left:65px; margin-right:65px">
+    <!-- Gestión de Citas -->
+    <div>
+        <div class="tarjeta-larga">
+            <h5 class="fw-bold">Gestión de Citas</h5>
+            <p>Organiza y programa citas de forma rápida y sencilla, brindando una mejor experiencia a tus clientes.</p>
         </div>
     </div>
 
-    <!-- Sección adicional sobre la app -->
-    <div class="row mt-5">
-        <div class="col text-center">
-            <h2 class="fw-bold">Optimiza la gestión de tu peluquería</h2>
-            <p class="text-muted">PeluqueriApp es la herramienta ideal para mejorar la eficiencia de tu negocio. Con nuestras funcionalidades de administración de citas, inventario, y análisis de rendimiento, podrás enfocarte en brindar el mejor servicio a tus clientes mientras nosotros nos encargamos del resto.</p>
+    <!-- Control de Inventario -->
+    <div>
+        <div class="tarjeta-larga">
+            <h5 class="fw-bold">Control de Inventario</h5>
+            <p>Lleva un seguimiento de todos los insumos y productos de tu peluquería, asegurando que siempre tengas lo necesario.</p>
         </div>
     </div>
+
+    <!-- Reportes y Análisis -->
+    <div>
+        <div class="tarjeta-larga">
+            <h5 class="fw-bold">Reportes y Análisis</h5>
+            <p>Obtén informes detallados de ingresos y rendimiento para tomar decisiones informadas.</p>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Sección adicional -->
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-8">
+        <div class="tarjeta-larga" style="height: 170px;">
+            <h5 class="fw-bold">Optimiza la gestión de tu peluquería</h5>
+            <p>PeluqueriApp es la herramienta ideal para mejorar la eficiencia de tu negocio. Con sus funcionalidades de administración de citas, inventario y análisis de rendimiento, podrás enfocarte en brindar el mejor servicio a tus clientes mientras la app se encarga del resto.</p>
+        </div>
+    </div>
+</div>
 </div>

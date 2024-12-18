@@ -20,12 +20,16 @@
             <tr>
                 <td>@producto.NombreProducto</td>
                 <td>@producto.Descripcion</td>
-                <td>AR$ @producto.Costo.ToString("N2", new CultureInfo("es-AR"))</td>
-                <td>AR$ @producto.Precio.ToString("N2", new CultureInfo("es-AR"))</td>
-                <td>@producto.StockDisponible</td>
+                <td class="text-end">AR$ @producto.Costo.ToString("N2", new CultureInfo("es-AR"))</td>
+                <td class="text-end">AR$ @producto.Precio.ToString("N2", new CultureInfo("es-AR"))</td>
+                <td class="text-end">@producto.StockDisponible</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@producto.ProductoId" class="btn btn-primary">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@producto.ProductoId" class="btn btn-danger">Eliminar</a>
+                    <a asp-action="Edit" asp-route-id="@producto.ProductoId" class="text-primary me-2" title="Editar">
+                        <i class="bi bi-pencil"></i> <!-- Ícono de lápiz -->
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@producto.ProductoId" class="text-danger" title="Eliminar">
+                        <i class="bi bi-trash"></i> <!-- Ícono de basura -->
+                    </a>
                 </td>
             </tr>
         }

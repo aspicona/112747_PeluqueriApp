@@ -58,7 +58,8 @@ namespace PeluqueriApp.Services
             var empresa = await _context.Empresas.FindAsync(id);
             if (empresa != null)
             {
-                _context.Empresas.Remove(empresa);
+                empresa.Activo = false; // Marcar como inactiva
+                _context.Empresas.Update(empresa); // Actualizar en la base de datos
                 await _context.SaveChangesAsync();
             }
         }

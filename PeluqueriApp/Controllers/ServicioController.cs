@@ -57,7 +57,8 @@ public class ServicioController : Controller
                 InsumoId = i.Id,
                 NombreInsumo = i.Nombre,
                 Seleccionado = false, // Por defecto no está seleccionado
-                CantidadNecesaria = 0 // Valor inicial
+                CantidadNecesaria = 0, // Valor inicial
+                CostoUnitario=i.CostoUnitario
             }).ToList()
         };
         return View(viewModel);
@@ -76,7 +77,8 @@ public class ServicioController : Controller
                 Nombre = model.Nombre,
                 Descripcion = model.Descripcion,
                 PrecioBase = model.PrecioBase,
-                DuracionEstimada = model.DuracionEstimada
+                DuracionEstimada = model.DuracionEstimada,
+                CostoInsumos= model.CostoInsumos
             };
 
             // Crear la lista de InsumosXservicio a partir del ViewModel
@@ -192,6 +194,20 @@ public class ServicioController : Controller
             CantidadNecesaria = 0
         }).ToList();
     }
+
+    [HttpGet]
+    public async Task<IActionResult> CalcularDuracionTotal([FromQuery] List<int> servicioIds)
+    {
+        if (servicioIds == null || !servicioIds.Any())
+        {
+            return BadRequest("No se han proporcionado servicios.");
+        }
+
+        var duracionTotal = await _servicioService.CalcularDuracionTotalAsync(servicioIds);
+
+        return Json(duracionTotal); // Devuelve la duración total en formato JSON
+    }
+
 
 }
 

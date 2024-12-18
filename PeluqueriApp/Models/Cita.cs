@@ -23,6 +23,7 @@ namespace PeluqueriApp.Models
         public EstadoCita EstadoCita { get; set; }
         public decimal PrecioEstimado { get; set; }
         public decimal PrecioFinal { get; set; }
+        public bool Activo { get; set; } = true;
 
         [ForeignKey("Empleado")]
         public int IdEmpleado { get; set; }
@@ -51,7 +52,7 @@ namespace PeluqueriApp.Models
         public decimal PrecioEstimado { get; set; }
         public decimal PrecioFinal { get; set; }
         public List<int> ServiciosSeleccionados { get; set; }
-        public List<ProductoSeleccionadoViewModel>? ProductosSeleccionados { get; set; }
+        public List<ProductoSeleccionadoViewModel>? ProductosSeleccionados { get; set; } = new List<ProductoSeleccionadoViewModel>();
         public List<ProductoViewModel> ProductosDisponibles { get; set; } = new List<ProductoViewModel>();
     }
 

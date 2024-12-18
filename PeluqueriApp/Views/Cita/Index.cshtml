@@ -2,19 +2,24 @@
 
 <h2>Agenda de Citas</h2>
 
-<form method="get" asp-action="Agenda">
+<form method="get" asp-action="Index">
+    <!-- Filtro por cliente -->
     <div class="form-group">
         <label for="IdCliente">Cliente</label>
-        <select name="IdCliente" class="form-control" asp-items="ViewBag.Clientes"></select>
+        <select name="IdCliente" class="form-control" asp-items="ViewBag.Clientes">
+            <option value="">Todos los clientes</option>
+        </select>
     </div>
+
+    <!-- Filtro por empleado -->
     <div class="form-group">
         <label for="IdEmpleado">Empleado</label>
-        <select name="IdEmpleado" class="form-control" asp-items="ViewBag.Empleados"></select>
+        <select name="IdEmpleado" class="form-control" asp-items="ViewBag.Empleados">
+            <option value="">Todos los estilistas</option>
+        </select>
     </div>
-    @*<div class="form-group">
-        <label for="IdEmpresa">Empresa</label>
-        <select name="IdEmpresa" class="form-control" asp-items="ViewBag.Empresas"></select>
-    </div>*@
+
+    <!-- Botón de filtrar -->
     <button type="submit" class="btn btn-primary">Filtrar</button>
 </form>
 
@@ -37,10 +42,27 @@
                 <td>@cita.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>@cita.EstadoCita.Descripcion</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@cita.Id" class="btn btn-warning">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@cita.Id" class="btn btn-danger">Eliminar</a>
-                    <a asp-controller="MercadoPago" asp-action="CreatePayment" asp-route-id="@cita.Id" class="btn btn-primary">Pagar con Mercado Pago</a>
-
+                    <a asp-action="Edit" asp-route-id="@cita.Id" class="text-primary me-2" title="Editar">
+                        <i class="bi bi-pencil"></i> <!-- Ícono de lápiz -->
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@cita.Id" class="text-danger" title="Eliminar">
+                        <i class="bi bi-trash"></i> <!-- Ícono de basura -->
+                    </a>
+                    @if (cita.EstadoCita.Descripcion == "Completada")
+                    {
+                        <a asp-controller="MercadoPago" asp-action="CreatePayment" asp-route-id="@cita.Id" 
+                           class="btn btn-mercado-pago">
+                        </a>
+                        <a asp-controller="Pago" asp-action="Create" 
+                           class="btn btn-primary">
+                            Pagar
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-mercado-pago disabled" disabled></button>
+                        <button class="btn btn-primary disabled" disabled>Pagar</button>
+                    }
                 </td>
             </tr>
         }
@@ -48,3 +70,40 @@
 </table>
 
 <a asp-action="Create" class="btn btn-success">Nueva Cita</a>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const message = "@TempData["SwalMessage"]";
+        const type = "@TempData["SwalType"]";
+
+        if (message) {
+            Swal.fire({
+                title: type === "success" ? "¡Éxito!" : "Advertencia",
+                text: message,
+                icon: type,
+                confirmButtonText: "Aceptar"
+            });
+        }
+    });
+</script>
+<style>
+    .btn-mercado-pago {
+        display: inline-block;
+        width: 150px; /* Ajusta el tamaño del botón según la imagen */
+        height: 40px; /* Ajusta la altura según la imagen */
+        background-image: url('https://presenterse.com/wp-content/uploads/2022/08/fb-mercado-pago-v2@2x-1068x580.png');
+        background-size: cover;
+        background-position: center;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-mercado-pago:hover {
+        filter: brightness(0.9); /* Efecto de hover */
+    }
+
+    .btn.disabled {
+        pointer-events: none;
+        opacity: 0.65;
+    }
+</style>
